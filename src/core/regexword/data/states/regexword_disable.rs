@@ -14,11 +14,12 @@ pub struct RegexWordDisable {
 impl RegexWordDisable {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
-            RegexWordEvents::Activated(_) => Some(
+            RegexWordEvents::Activated(event) => Some(
                 RegexWordStates::RegexWordActivate(
                     RegexWordActivate {
                         kind: self.kind.clone(),
                         data: self.data.clone(),
+                        date_activate: event.date_activate
                     }
                 )
             ),

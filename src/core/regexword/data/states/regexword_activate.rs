@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::states::regexword_disable::RegexWordDisable;
@@ -9,6 +10,7 @@ use framework_cqrs_lib::cqrs::models::jsonapi::CanGetTypee;
 pub struct RegexWordActivate {
     pub kind: String,
     pub data: RegexWordData,
+    pub date_activate: NaiveDate,
 }
 
 impl RegexWordActivate {
@@ -36,7 +38,8 @@ impl CanGetTypee for RegexWordActivate {
 impl From<RegexWordActivate> for RegexWordActivateView {
     fn from(value: RegexWordActivate) -> Self {
         RegexWordActivateView {
-            data: value.data.into()
+            data: value.data.into(),
+            date_activate: value.date_activate,
         }
     }
 }

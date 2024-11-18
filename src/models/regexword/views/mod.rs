@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -22,6 +22,7 @@ pub enum RegexWordViewState {
 pub struct RegexWordActivateView {
     #[serde(flatten)]
     pub data: RegexWordDataView,
+    pub date_activate: NaiveDate,
 }
 
 
@@ -54,6 +55,7 @@ pub struct RegexWordCreatedView {
 pub struct RegexWordActivatedView {
     pub by: String,
     pub at: DateTime<Utc>,
+    pub date_activate: NaiveDate,
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]

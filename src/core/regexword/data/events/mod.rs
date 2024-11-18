@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 
 use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::models::regexword::views::{RegexWordActivatedView, RegexWordDisabledView, RegexWordViewEvent, RegexWordCreatedView, RegexWordDataView};
@@ -19,6 +19,7 @@ impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
             RegexWordEvents::Activated(c) => RegexWordViewEvent::Activated(RegexWordActivatedView {
                 by: c.by,
                 at: c.at,
+                date_activate: c.date_activate,
             }),
             RegexWordEvents::Disabled(c) => RegexWordViewEvent::Disabled(RegexWordDisabledView {
                 by: c.by,
@@ -49,6 +50,7 @@ pub struct RegexWordCreated {
 pub struct RegexWordActivated {
     pub by: String,
     pub at: DateTime<Utc>,
+    pub date_activate: NaiveDate,
 }
 
 

@@ -17,6 +17,7 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
                     RegexWordActivated {
                         by: event_dbo.by,
                         at: event_dbo.at,
+                        date_activate: event_dbo.date_activate
                     }
                 ),
             RegexWordDboEvent::Disable(event_dbo) =>
@@ -55,8 +56,9 @@ impl From<RegexWordEvents> for RegexWordDboEvent {
                 RegexWordActivated {
                     by,
                     at,
+                    date_activate
                 }
-            ) => RegexWordDboEvent::Activate(RegexWordActivateDbo { by, at }),
+            ) => RegexWordDboEvent::Activate(RegexWordActivateDbo { by, at, date_activate }),
             RegexWordEvents::Created(created) =>
                 RegexWordDboEvent::Created(
                     RegexWordCreatedDbo {

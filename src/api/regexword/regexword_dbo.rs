@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 
 
@@ -17,6 +17,7 @@ pub enum RegexWordDboState {
         kind: String,
         #[serde(flatten)]
         data: RegexWordDataDbo,
+        date_activate: NaiveDate,
     },
     RegexWordDisableDbo {
         #[serde(rename = "_kind")]
@@ -47,6 +48,7 @@ pub struct RegexWordCreatedDbo {
 pub struct RegexWordActivateDbo {
     pub by: String,
     pub at: DateTime<Utc>,
+    pub date_activate: NaiveDate,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

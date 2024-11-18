@@ -28,11 +28,12 @@ impl From<RegexWordDboState> for RegexWordStates {
                         data: data.into(),
                     }
                 ),
-            RegexWordDboState::RegexWordActivateDbo { kind, data } =>
+            RegexWordDboState::RegexWordActivateDbo { kind, data, date_activate } =>
                 RegexWordStates::RegexWordActivate(
                     RegexWordActivate {
                         kind,
                         data: data.into(),
+                        date_activate
                     }
                 )
         }
@@ -46,6 +47,7 @@ impl From<RegexWordStates> for RegexWordDboState {
                 RegexWordDboState::RegexWordActivateDbo {
                     kind: data.kind,
                     data: data.data.into(),
+                    date_activate: data.date_activate
                 }
             }
             RegexWordStates::RegexWordDisable(data) => {
