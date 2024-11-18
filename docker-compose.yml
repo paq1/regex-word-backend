@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  app:
+    image: ppaquin/regex-word-backend:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - API_ADDRESS=0.0.0.0
+      - API_PORT=8080
+      - MONGO_URI=mongodb://db:27017
+      - JWT_SECRET=xxx
+    networks:
+      - regex_word_backend-network
+  db:
+    image: mongo:latest
+#    ports:
+#      - "27017:27017"
+    volumes:
+      - regex_word_backend_db_data:/data/db
+    networks:
+      - regex_word_backend-network
+volumes:
+  regex_word_backend_db_data:
+networks:
+  regex_word_backend-network:
+    driver: bridge
