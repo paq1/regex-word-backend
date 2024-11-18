@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BandeauDataDbo {
+pub struct RegexWordDataDbo {
     pub word: String,
     pub regex_parts: Vec<String>,
     pub niveau_difficulte: String,
@@ -12,62 +12,46 @@ pub struct BandeauDataDbo {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 pub enum RegexWordDboState {
-    BandeauCreatedDbo {
+    RegexWordActivateDbo {
         #[serde(rename = "_kind")]
         kind: String,
         #[serde(flatten)]
-        data: BandeauDataDbo,
+        data: RegexWordDataDbo,
     },
-    BandeauProdDbo {
+    RegexWordDisableDbo {
         #[serde(rename = "_kind")]
         kind: String,
         #[serde(flatten)]
-        data: BandeauDataDbo,
-    },
-    BandeauDisableDbo {
-        #[serde(rename = "_kind")]
-        kind: String,
-        #[serde(flatten)]
-        data: BandeauDataDbo,
-        reason: String,
+        data: RegexWordDataDbo,
     },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 pub enum RegexWordDboEvent {
-    Created(BandeauCreatedDbo),
-    Updated(BandeauUpdatedDbo),
-    Disable(BandeauDisabledDbo),
-    Prod(BandeauProdUpDbo),
+    Created(RegexWordCreatedDbo),
+    Activate(RegexWordActivateDbo),
+    Disable(RegexWordDisabledDbo),
 }
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BandeauCreatedDbo {
+pub struct RegexWordCreatedDbo {
     pub by: String,
     pub at: DateTime<Utc>,
     #[serde(flatten)]
-    pub data: BandeauDataDbo,
+    pub data: RegexWordDataDbo,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BandeauProdUpDbo {
+pub struct RegexWordActivateDbo {
     pub by: String,
     pub at: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BandeauUpdatedDbo {
+pub struct RegexWordDisabledDbo {
     pub by: String,
     pub at: DateTime<Utc>,
-    pub data: BandeauDataDbo,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BandeauDisabledDbo {
-    pub by: String,
-    pub at: DateTime<Utc>,
-    pub reason: String,
 }
 

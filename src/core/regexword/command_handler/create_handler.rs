@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::core::regexword::data::events::{RegexWordCreated, RegexWordDisabled, RegexWordEvents};
+use crate::core::regexword::data::events::{RegexWordCreated, RegexWordEvents};
 use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::models::regexword::commands::RegexWordCommands;

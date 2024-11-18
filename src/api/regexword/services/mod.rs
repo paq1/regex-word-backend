@@ -1,7 +1,7 @@
 use crate::core::regexword::services::RegexWordService;
 use async_trait::async_trait;
 
-pub struct BandeauServiceImpl {}
+pub struct RegexWordServiceImpl {}
 
 #[async_trait]
-impl RegexWordService for BandeauServiceImpl {}
+impl RegexWordService for RegexWordServiceImpl {}

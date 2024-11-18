@@ -1,7 +1,6 @@
 use crate::api::regexword::regexword_dbo::RegexWordDboState;
 use crate::core::regexword::data::states::regexword_activate::RegexWordActivate;
 use crate::core::regexword::data::states::regexword_disable::RegexWordDisable;
-use crate::core::regexword::data::states::regexword_prod::BandeauProd;
 use crate::core::regexword::data::states::RegexWordStates;
 use framework_cqrs_lib::cqrs::infra::repositories::mongo_entity_repository::CanTransform;
 
@@ -22,24 +21,16 @@ impl CanTransform<RegexWordDboState> for RegexWordStates {
 impl From<RegexWordDboState> for RegexWordStates {
     fn from(value: RegexWordDboState) -> Self {
         match value {
-            RegexWordDboState::BandeauCreatedDbo { kind, data } =>
-                RegexWordStates::RegexWordActivate(
-                    RegexWordActivate {
-                        kind,
-                        data: data.into(),
-                    }
-                ),
-            RegexWordDboState::BandeauDisableDbo { kind, data, reason } =>
+            RegexWordDboState::RegexWordDisableDbo { kind, data } =>
                 RegexWordStates::RegexWordDisable(
                     RegexWordDisable {
                         kind,
                         data: data.into(),
-                        reason,
                     }
                 ),
-            RegexWordDboState::BandeauProdDbo { kind, data } =>
-                RegexWordStates::BandeauProd(
-                    BandeauProd {
+            RegexWordDboState::RegexWordActivateDbo { kind, data } =>
+                RegexWordStates::RegexWordActivate(
+                    RegexWordActivate {
                         kind,
                         data: data.into(),
                     }
@@ -52,20 +43,13 @@ impl From<RegexWordStates> for RegexWordDboState {
     fn from(value: RegexWordStates) -> Self {
         match value {
             RegexWordStates::RegexWordActivate(data) => {
-                RegexWordDboState::BandeauCreatedDbo {
+                RegexWordDboState::RegexWordActivateDbo {
                     kind: data.kind,
                     data: data.data.into(),
                 }
             }
             RegexWordStates::RegexWordDisable(data) => {
-                RegexWordDboState::BandeauDisableDbo {
-                    kind: data.kind,
-                    data: data.data.into(),
-                    reason: data.reason,
-                }
-            }
-            RegexWordStates::BandeauProd(data) => {
-                RegexWordDboState::BandeauProdDbo {
+                RegexWordDboState::RegexWordDisableDbo {
                     kind: data.kind,
                     data: data.data.into(),
                 }

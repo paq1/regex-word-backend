@@ -1,7 +1,6 @@
 use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::states::regexword_disable::RegexWordDisable;
-use crate::core::regexword::data::states::regexword_prod::BandeauProd;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::models::regexword::views::{RegexWordDataView, RegexWordActivateView};
 use framework_cqrs_lib::cqrs::models::jsonapi::CanGetTypee;
@@ -15,7 +14,7 @@ pub struct RegexWordActivate {
 impl RegexWordActivate {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
-            RegexWordEvents::Disabled(disabled) => Some(
+            RegexWordEvents::Disabled(_) => Some(
                 RegexWordStates::RegexWordDisable(
                     RegexWordDisable {
                         kind: self.kind.clone(),

@@ -1,11 +1,10 @@
-use crate::api::regexword::services::BandeauServiceImpl;
+use crate::api::regexword::services::RegexWordServiceImpl;
 use crate::api::regexword::regexword_dbo::{RegexWordDboEvent, RegexWordDboState};
 use crate::api::regexword::regexword_event_mongo_repository::RegexWordEventMongoRepository;
 use crate::api::regexword::regexword_mongo_dao::{RegexWordEventMongoDAO, RegexWordMongoDAO};
 use crate::api::regexword::regexword_mongo_repository::MongoRegexWordRepository;
 use crate::core::regexword::command_handler::create_handler::RegexWordCreateHandler;
 use crate::core::regexword::command_handler::disable_handler::RegexWordDisableHandler;
-use crate::core::regexword::command_handler::update_handler::BandeauUpdateHandler;
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::core::regexword::reducer::RegexWordReducer;
@@ -22,21 +21,21 @@ use futures::lock::Mutex;
 use std::sync::Arc;
 use crate::core::regexword::command_handler::activate_handler::RegexWordActivateHandler;
 
-pub struct BandeauComponent {
+pub struct RegexWordComponent {
     pub store: Arc<dyn CustomRegexWordRepository>,
     pub journal: Arc<dyn RepositoryEvents<RegexWordEvents, String>>,
     pub service: Arc<dyn RegexWordService>,
     pub engine: Arc<Engine<RegexWordStates, RegexWordCommands, RegexWordEvents>>,
 }
 
-impl BandeauComponent {
+impl RegexWordComponent {
     pub async fn new(_authentication_component: &Arc<AuthenticationComponent>) -> Self {
-        let dbname = "bandeauapi";
+        let dbname = "regexwordapi";
 
         let dao_store: Arc<Mutex<dyn DAO<EntityDBO<RegexWordDboState, String>, String>>> =
-            Arc::new(Mutex::new(RegexWordMongoDAO::new(dbname, "bandeau_store_actix").await));
+            Arc::new(Mutex::new(RegexWordMongoDAO::new(dbname, "regexword_store").await));
         let dao_journal: Arc<Mutex<dyn DAO<EventDBO<RegexWordDboEvent, String>, String>>> =
-            Arc::new(Mutex::new(RegexWordEventMongoDAO::new(dbname, "bandeau_journal_actix").await));
+            Arc::new(Mutex::new(RegexWordEventMongoDAO::new(dbname, "regexword_journal").await));
 
         // repo
         let store = Arc::new(
@@ -53,7 +52,7 @@ impl BandeauComponent {
 
         // services
         let service: Arc<dyn RegexWordService> = Arc::new(
-            BandeauServiceImpl {}
+            RegexWordServiceImpl {}
         );
 
         let engine: Arc<Engine<RegexWordStates, RegexWordCommands, RegexWordEvents>> = Arc::new(Engine {
@@ -63,7 +62,6 @@ impl BandeauComponent {
                         RegexWordCreateHandler {}
                     )
                 ),
-                CommandHandler::Update(Box::new(BandeauUpdateHandler {})),
                 CommandHandler::Update(Box::new(RegexWordDisableHandler {})),
                 CommandHandler::Update(Box::new(RegexWordActivateHandler {})),
             ],

@@ -6,14 +6,14 @@ use framework_cqrs_lib::cqrs::infra::api_key::component::ApiKeyComponent;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
-use api::regexword::routes::read_routes::{fetch_many_bandeau, fetch_one_bandeau};
-use api::regexword::routes::write_routes::{insert_one_bandeau, update_one_bandeau};
+use api::regexword::routes::read_routes::{fetch_many_regexword, fetch_one_regexword};
+use api::regexword::routes::write_routes::{insert_one_regexword, activate_one_regexword};
 
 
-use crate::api::regexword::regexword_component::BandeauComponent;
+use crate::api::regexword::regexword_component::RegexWordComponent;
 use crate::api::regexword::routes::exemple_wit_api_key_routes::exemple_api_key;
-use crate::api::regexword::routes::read_routes::{fetch_bandeau_events, fetch_one_bandeau_event};
-use crate::api::regexword::routes::write_routes::{disable_one_bandeau, prod_one_bandeau};
+use crate::api::regexword::routes::read_routes::{fetch_regexword_events, fetch_one_regexword_event};
+use crate::api::regexword::routes::write_routes::{disable_one_regexword};
 use crate::api::swagger::ApiDoc;
 use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 
@@ -34,11 +34,11 @@ async fn main() -> std::io::Result<()> {
 
     let authentication_component = Arc::new(AuthenticationComponent::new().unwrap());
     let api_key_component = Arc::new(ApiKeyComponent::new(
-        "bandeauapi", "bandeauinfos",
+        "regexwordapi", "regexword",
     ).await);
 
     // regexword aggregat
-    let bandeau_component = BandeauComponent::new(&authentication_component.clone()).await;
+    let regexword_component = RegexWordComponent::new(&authentication_component.clone()).await;
 
     let openapi = ApiDoc::openapi();
     let api_address = std::env::var("API_ADDRESS").unwrap();
@@ -64,24 +64,23 @@ async fn main() -> std::io::Result<()> {
             // regexword services
             .service(
                 web::scope("/regexword")
-                    .service(fetch_one_bandeau)
-                    .service(fetch_one_bandeau_event)
-                    .service(fetch_many_bandeau)
-                    .service(fetch_bandeau_events)
-                    .service(insert_one_bandeau)
-                    .service(update_one_bandeau)
-                    .service(disable_one_bandeau)
-                    .service(prod_one_bandeau)
+                    .service(fetch_one_regexword)
+                    .service(fetch_one_regexword_event)
+                    .service(fetch_many_regexword)
+                    .service(fetch_regexword_events)
+                    .service(insert_one_regexword)
+                    .service(activate_one_regexword)
+                    .service(disable_one_regexword)
                     .service(exemple_api_key)
-                    .app_data(web::Data::new(Arc::clone(&bandeau_component.engine)))
+                    .app_data(web::Data::new(Arc::clone(&regexword_component.engine)))
                     .app_data(
-                        web::Data::new(Arc::clone(&bandeau_component.store))
+                        web::Data::new(Arc::clone(&regexword_component.store))
                     )
                     .app_data(
-                        web::Data::new(Arc::clone(&bandeau_component.journal))
+                        web::Data::new(Arc::clone(&regexword_component.journal))
                     )
                     .app_data(
-                        web::Data::new(Arc::clone(&bandeau_component.service))
+                        web::Data::new(Arc::clone(&regexword_component.service))
                     )
                     .app_data(
                         web::Data::new(api_key_component.service.clone())

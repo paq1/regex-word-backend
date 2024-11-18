@@ -1,5 +1,5 @@
-use crate::api::regexword::regexword_dbo::{BandeauCreatedDbo, RegexWordDboEvent, BandeauDisabledDbo, BandeauProdUpDbo, BandeauUpdatedDbo};
-use crate::core::regexword::data::events::{RegexWordActivated, RegexWordDisabled, RegexWordEvents, BandeauProdUp, BandeauUpdated};
+use crate::api::regexword::regexword_dbo::{RegexWordCreatedDbo, RegexWordDboEvent, RegexWordDisabledDbo, RegexWordActivateDbo};
+use crate::core::regexword::data::events::{RegexWordActivated, RegexWordCreated, RegexWordDisabled, RegexWordEvents};
 use framework_cqrs_lib::cqrs::core::data::EntityEvent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::EventDBO;
 
@@ -7,17 +7,16 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
     fn from(value: RegexWordDboEvent) -> Self {
         match value {
             RegexWordDboEvent::Created(event_dbo) =>
-                RegexWordEvents::Activated(RegexWordActivated {
+                RegexWordEvents::Created(RegexWordCreated {
                     by: event_dbo.by,
                     at: event_dbo.at,
                     data: event_dbo.data.into(),
                 }),
-            RegexWordDboEvent::Updated(event_dbo) =>
-                RegexWordEvents::Updated(
-                    BandeauUpdated {
+            RegexWordDboEvent::Activate(event_dbo) =>
+                RegexWordEvents::Activated(
+                    RegexWordActivated {
                         by: event_dbo.by,
                         at: event_dbo.at,
-                        data: event_dbo.data.into(),
                     }
                 ),
             RegexWordDboEvent::Disable(event_dbo) =>
@@ -25,16 +24,8 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
                     RegexWordDisabled {
                         by: event_dbo.by,
                         at: event_dbo.at,
-                        reason: event_dbo.reason,
                     }
                 ),
-            RegexWordDboEvent::Prod(event_dbo) =>
-                RegexWordEvents::Prod(
-                    BandeauProdUp {
-                        by: event_dbo.by,
-                        at: event_dbo.at,
-                    }
-                )
         }
     }
 }
@@ -64,32 +55,23 @@ impl From<RegexWordEvents> for RegexWordDboEvent {
                 RegexWordActivated {
                     by,
                     at,
-                    data
                 }
-            ) => RegexWordDboEvent::Created(BandeauCreatedDbo { by, at, data: data.into() }),
-            RegexWordEvents::Updated(updated) =>
-                RegexWordDboEvent::Updated(
-                    BandeauUpdatedDbo {
-                        by: updated.by,
-                        at: updated.at,
-                        data: updated.data.into(),
+            ) => RegexWordDboEvent::Activate(RegexWordActivateDbo { by, at }),
+            RegexWordEvents::Created(created) =>
+                RegexWordDboEvent::Created(
+                    RegexWordCreatedDbo {
+                        by: created.by,
+                        at: created.at,
+                        data: created.data.into(),
                     }
                 ),
             RegexWordEvents::Disabled(disabled) =>
                 RegexWordDboEvent::Disable(
-                    BandeauDisabledDbo {
+                    RegexWordDisabledDbo {
                         by: disabled.by,
                         at: disabled.at,
-                        reason: disabled.reason,
                     }
                 ),
-            RegexWordEvents::Prod(prod) =>
-                RegexWordDboEvent::Prod(
-                    BandeauProdUpDbo {
-                        by: prod.by,
-                        at: prod.at,
-                    }
-                )
         }
     }
 }

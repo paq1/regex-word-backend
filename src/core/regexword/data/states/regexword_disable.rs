@@ -14,7 +14,7 @@ pub struct RegexWordDisable {
 impl RegexWordDisable {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
-            RegexWordEvents::Activated(activated) => Some(
+            RegexWordEvents::Activated(_) => Some(
                 RegexWordStates::RegexWordActivate(
                     RegexWordActivate {
                         kind: self.kind.clone(),

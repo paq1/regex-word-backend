@@ -16,7 +16,7 @@ impl CommandHandlerUpdate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
 
     async fn on_command(&self, _id: String, _state: RegexWordStates, command: RegexWordCommands, context: &Context) -> ResultErr<RegexWordEvents> {
         match command {
-            RegexWordCommands::Activate(cmd) => Ok(
+            RegexWordCommands::Activate(_) => Ok(
                 RegexWordEvents::Activated(RegexWordActivated { by: context.subject.clone(), at: context.now  })
             ),
             _ => Err(Error::Simple("bad request".to_string()))

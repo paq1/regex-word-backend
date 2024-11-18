@@ -2,13 +2,12 @@ use utoipa::openapi::security::{ApiKey, ApiKeyValue, HttpAuthScheme, HttpBuilder
 use utoipa::Modify;
 
 use crate::api::regexword::routes::exemple_wit_api_key_routes::__path_exemple_api_key;
-use crate::api::regexword::routes::read_routes::__path_fetch_bandeau_events;
-use crate::api::regexword::routes::read_routes::__path_fetch_many_bandeau;
-use crate::api::regexword::routes::read_routes::__path_fetch_one_bandeau;
-use crate::api::regexword::routes::write_routes::__path_disable_one_bandeau;
-use crate::api::regexword::routes::write_routes::__path_prod_one_bandeau;
-use crate::api::regexword::routes::write_routes::__path_insert_one_bandeau;
-use crate::api::regexword::routes::write_routes::__path_update_one_bandeau;
+use crate::api::regexword::routes::read_routes::__path_fetch_regexword_events;
+use crate::api::regexword::routes::read_routes::__path_fetch_many_regexword;
+use crate::api::regexword::routes::read_routes::__path_fetch_one_regexword;
+use crate::api::regexword::routes::write_routes::__path_disable_one_regexword;
+use crate::api::regexword::routes::write_routes::__path_insert_one_regexword;
+use crate::api::regexword::routes::write_routes::__path_activate_one_regexword;
 use crate::models::regexword::commands::*;
 use crate::models::regexword::views::*;
 use framework_cqrs_lib::cqrs::core::repositories::query::{InfoPaged, Page};
@@ -20,26 +19,24 @@ use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
 #[derive(utoipa::OpenApi)]
 #[openapi(
     paths(
-        fetch_many_bandeau,
-        fetch_one_bandeau,
-        insert_one_bandeau,
-        update_one_bandeau,
-        disable_one_bandeau,
-        prod_one_bandeau,
-        fetch_bandeau_events,
+        fetch_many_regexword,
+        fetch_one_regexword,
+        insert_one_regexword,
+        activate_one_regexword,
+        disable_one_regexword,
+        fetch_regexword_events,
         exemple_api_key,
     ),
     components(
         schemas(
             CreateApiKeyCommand,
-            CreateBandeauCommand,
-            BandeauCreatedView,
-            ManyView < BandeauViewState >,
-            CreateBandeauCommand,
-            UpdateBandeauCommand,
-            DisableBandeauCommand,
-            ProductionBandeauCommand,
-            DataWrapperView < ApiView < BandeauViewEvent > >,
+            CreateRegexWordCommand,
+            RegexWordCreatedView,
+            ManyView < RegexWordViewState >,
+            CreateRegexWordCommand,
+            ActivateRegexWordCommand,
+            DisableRegexWordCommand,
+            DataWrapperView < ApiView < RegexWordViewEvent > >,
             InfoPaged,
             Page
         )

@@ -4,7 +4,7 @@ use std::sync::Arc;
 use actix_web::web::Query;
 use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 
-use crate::api::regexword::query::{from_bandeau_query_to_query_repo, from_fetch_many_bandeau_query_to_query_repo, BandeauQuery, FetchManyBandeauQuery};
+use crate::api::regexword::query::{from_regexword_query_to_query_repo, RegexWordQuery};
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::repositories::CustomRegexWordRepository;
 use crate::models::regexword::views::{RegexWordViewState, RegexWordViewEvent};
@@ -23,17 +23,17 @@ use framework_cqrs_lib::cqrs::models::views::entities::EntityView;
     tag = "regexword",
     path = "/regexword",
     responses(
-        (status = 200, description = "fait ca", body = Paged<EntityView<BandeauViewState>>)
+        (status = 200, description = "fait ca", body = Paged<EntityView<RegexWordViewState>>)
     ),
     params(
-        FetchManyBandeauQuery
+        RegexWordQuery
     )
 )]
 #[get("")]
-pub async fn fetch_many_bandeau(
+pub async fn fetch_many_regexword(
     store: web::Data<Arc<dyn CustomRegexWordRepository>>,
     http_error: web::Data<StandardHttpError>,
-    query: Query<FetchManyBandeauQuery>,
+    query: Query<RegexWordQuery>,
     req: HttpRequest,
 ) -> impl Responder {
     let ctx: Context = Context::empty()
@@ -46,7 +46,7 @@ pub async fn fetch_many_bandeau(
         );
 
     match store.fetch_many(
-        from_fetch_many_bandeau_query_to_query_repo(query)
+        from_regexword_query_to_query_repo(query)
     ).await {
         Ok(items) => {
             let paged_view: Paged<EntityView<RegexWordViewState>> = items.map(|entity| {
@@ -66,12 +66,12 @@ pub async fn fetch_many_bandeau(
         (
         status = 200,
         description = "Get the current state.",
-        body = BandeausStates
+        body = RegexWordStates
         )
     )
 )]
 #[get("/{entity_id}")]
-pub async fn fetch_one_bandeau(
+pub async fn fetch_one_regexword(
     path: web::Path<String>,
     store: web::Data<Arc<dyn CustomRegexWordRepository>>,
     http_error: web::Data<StandardHttpError>,
@@ -99,23 +99,23 @@ pub async fn fetch_one_bandeau(
         (
         status = 200,
         description = "Get the all events ",
-        body = BandeauView
+        body = RegexWordView
         )
     ),
     params(
-        BandeauQuery
+        RegexWordQuery
     )
 )]
 #[get("/{entity_id}/events")]
-pub async fn fetch_bandeau_events(
+pub async fn fetch_regexword_events(
     path: web::Path<String>,
     journal: web::Data<Arc<dyn RepositoryEvents<RegexWordEvents, String>>>,
     http_error: web::Data<StandardHttpError>,
-    query: Query<BandeauQuery>,
+    query: Query<RegexWordQuery>,
     req: HttpRequest,
 ) -> impl Responder {
     let id = path.into_inner();
-    let query_core: QueryCore = from_bandeau_query_to_query_repo(query.clone());
+    let query_core: QueryCore = from_regexword_query_to_query_repo(query.clone());
 
     let ctx: Context = Context::empty()
         .decore_with_http_header(&req)
@@ -164,12 +164,12 @@ pub async fn fetch_bandeau_events(
         (
         status = 200,
         description = "Get event.",
-        body = DataWrapperView < EventView < BandeauViewEvent >>
+        body = DataWrapperView < EventView < RegexWordViewEvent >>
         )
     )
 )]
 #[get("/{entity_id}/events/{event_id}")]
-pub async fn fetch_one_bandeau_event(
+pub async fn fetch_one_regexword_event(
     path: web::Path<(String, String)>,
     journal: web::Data<Arc<dyn RepositoryEvents<RegexWordEvents, String>>>,
     http_error: web::Data<StandardHttpError>,

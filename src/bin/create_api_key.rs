@@ -8,7 +8,7 @@ async fn main() {
     env_logger::init();
 
     let api_key_component = Arc::new(ApiKeyComponent::new(
-        "bandeauapi", "bandeauinfos",
+        "regexwordapi", "regexword",
     ).await);
 
     let maybe_create_api_key = api_key_component
