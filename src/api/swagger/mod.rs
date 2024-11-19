@@ -5,9 +5,8 @@ use crate::api::regexword::routes::exemple_wit_api_key_routes::__path_exemple_ap
 use crate::api::regexword::routes::read_routes::__path_fetch_regexword_events;
 use crate::api::regexword::routes::read_routes::__path_fetch_many_regexword;
 use crate::api::regexword::routes::read_routes::__path_fetch_one_regexword;
-use crate::api::regexword::routes::write_routes::__path_disable_one_regexword;
 use crate::api::regexword::routes::write_routes::__path_insert_one_regexword;
-use crate::api::regexword::routes::write_routes::__path_activate_one_regexword;
+use crate::api::regexword::routes::write_routes::__path_increment_one_regexword;
 use crate::models::regexword::commands::*;
 use crate::models::regexword::views::*;
 use framework_cqrs_lib::cqrs::core::repositories::query::{InfoPaged, Page};
@@ -22,8 +21,7 @@ use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
         fetch_many_regexword,
         fetch_one_regexword,
         insert_one_regexword,
-        activate_one_regexword,
-        disable_one_regexword,
+        increment_one_regexword,
         fetch_regexword_events,
         exemple_api_key,
     ),
@@ -34,8 +32,7 @@ use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
             RegexWordCreatedView,
             ManyView < RegexWordViewState >,
             CreateRegexWordCommand,
-            ActivateRegexWordCommand,
-            DisableRegexWordCommand,
+            IncrementRegexWordCommand,
             DataWrapperView < ApiView < RegexWordViewEvent > >,
             InfoPaged,
             Page

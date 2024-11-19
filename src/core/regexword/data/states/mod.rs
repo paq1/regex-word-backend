@@ -1,24 +1,26 @@
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::events::RegexWordEvents::Created;
-use crate::core::regexword::data::states::regexword_activate::RegexWordActivate;
-use crate::core::regexword::data::states::regexword_disable::RegexWordDisable;
+use crate::core::regexword::data::states::regexword::RegexWord;
 use crate::models::regexword::views::RegexWordViewState;
 use framework_cqrs_lib::cqrs::models::jsonapi::{CanBeView, CanGetTypee};
 
-pub mod regexword_activate;
-pub mod regexword_disable;
+pub mod regexword;
 
 #[derive(Clone, Debug)]
 pub enum RegexWordStates {
-    RegexWordActivate(RegexWordActivate),
-    RegexWordDisable(RegexWordDisable),
+    RegexWord(RegexWord),
 }
 
 impl RegexWordStates {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match self {
-            RegexWordStates::RegexWordActivate(c) => c.reduce_state(event),
-            RegexWordStates::RegexWordDisable(c) => c.reduce_state(event),
+            RegexWordStates::RegexWord(c) => c.reduce_state(event),
+        }
+    }
+
+    pub fn get_nb_selected(&self) -> u32 {
+        match self {
+            RegexWordStates::RegexWord(regexword) => regexword.data.nb_selected
         }
     }
 
@@ -26,8 +28,8 @@ impl RegexWordStates {
         match event {
             Created(data) =>
                 Some(
-                    RegexWordStates::RegexWordDisable(
-                        RegexWordDisable {
+                    RegexWordStates::RegexWord(
+                        RegexWord {
                             kind: "urn:api:regexword:regexword".to_string(),
                             data: data.data,
                         }
@@ -41,8 +43,7 @@ impl RegexWordStates {
 impl CanGetTypee for RegexWordStates {
     fn get_type(&self) -> String {
         match self {
-            RegexWordStates::RegexWordActivate(state) => state.get_type(),
-            RegexWordStates::RegexWordDisable(state) => state.get_type(),
+            RegexWordStates::RegexWord(state) => state.get_type(),
         }
     }
 }
@@ -50,10 +51,8 @@ impl CanGetTypee for RegexWordStates {
 impl CanBeView<RegexWordViewState> for RegexWordStates {
     fn to_view(&self) -> RegexWordViewState {
         match self.clone() {
-            RegexWordStates::RegexWordActivate(state) =>
+            RegexWordStates::RegexWord(state) =>
                 RegexWordViewState::Activate(state.into()),
-            RegexWordStates::RegexWordDisable(state) =>
-                RegexWordViewState::Disable(state.into()),
         }
     }
 }

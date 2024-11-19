@@ -1,26 +1,26 @@
-use chrono::NaiveDate;
-use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::core::regexword::data::events::RegexWordEvents;
-use crate::core::regexword::data::states::regexword_disable::RegexWordDisable;
+use crate::core::regexword::data::regexword_data::RegexWordData;
 use crate::core::regexword::data::states::RegexWordStates;
-use crate::models::regexword::views::{RegexWordDataView, RegexWordActivateView};
+use crate::models::regexword::views::{RegexWordDataView, RegexWordView};
 use framework_cqrs_lib::cqrs::models::jsonapi::CanGetTypee;
 
 #[derive(Clone, Debug)]
-pub struct RegexWordActivate {
+pub struct RegexWord {
     pub kind: String,
     pub data: RegexWordData,
-    pub date_activate: NaiveDate,
 }
 
-impl RegexWordActivate {
+impl RegexWord {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
-            RegexWordEvents::Disabled(_) => Some(
-                RegexWordStates::RegexWordDisable(
-                    RegexWordDisable {
+            RegexWordEvents::Incremented(evt) => Some(
+                RegexWordStates::RegexWord(
+                    RegexWord {
                         kind: self.kind.clone(),
-                        data: self.data.clone(),
+                        data: RegexWordData {
+                            nb_selected: evt.nb_selected,
+                            ..self.data.clone()
+                        },
                     }
                 )
             ),
@@ -29,17 +29,16 @@ impl RegexWordActivate {
     }
 }
 
-impl CanGetTypee for RegexWordActivate {
+impl CanGetTypee for RegexWord {
     fn get_type(&self) -> String {
         "urn:api:regexword:regexword".to_string()
     }
 }
 
-impl From<RegexWordActivate> for RegexWordActivateView {
-    fn from(value: RegexWordActivate) -> Self {
-        RegexWordActivateView {
+impl From<RegexWord> for RegexWordView {
+    fn from(value: RegexWord) -> Self {
+        RegexWordView {
             data: value.data.into(),
-            date_activate: value.date_activate,
         }
     }
 }
@@ -50,6 +49,7 @@ impl From<RegexWordData> for RegexWordDataView {
             regex_parts: value.regex_parts,
             word: value.word,
             niveau_difficulte: value.niveau_difficulte,
+            nb_selected: value.nb_selected,
         }
     }
 }

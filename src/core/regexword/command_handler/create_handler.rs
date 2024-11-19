@@ -25,8 +25,9 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                             at: context.clone().now,
                             data: RegexWordData {
                                 word: c.word,
-                                regex_parts: c.regex_parts,
-                                niveau_difficulte: c.niveau_difficulte,
+                                regex_parts: vec![], // TODO : generate regex
+                                niveau_difficulte: "simple".to_string(), // TODO : déduire la difficulté
+                                nb_selected: 0,
                             },
                         }
                     )

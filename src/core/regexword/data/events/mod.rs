@@ -1,7 +1,7 @@
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, Utc};
 
 use crate::core::regexword::data::regexword_data::RegexWordData;
-use crate::models::regexword::views::{RegexWordActivatedView, RegexWordDisabledView, RegexWordViewEvent, RegexWordCreatedView, RegexWordDataView};
+use crate::models::regexword::views::{RegexWordCreatedView, RegexWordDataView, RegexWordIncrementedView, RegexWordViewEvent};
 use framework_cqrs_lib::cqrs::models::jsonapi::CanBeView;
 
 impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
@@ -12,18 +12,15 @@ impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
                     regex_parts: c.data.regex_parts,
                     word: c.data.word,
                     niveau_difficulte: c.data.niveau_difficulte,
+                    nb_selected: c.data.nb_selected
                 },
                 by: c.by,
                 at: c.at
             }),
-            RegexWordEvents::Activated(c) => RegexWordViewEvent::Activated(RegexWordActivatedView {
-                by: c.by,
-                at: c.at,
-                date_activate: c.date_activate,
-            }),
-            RegexWordEvents::Disabled(c) => RegexWordViewEvent::Disabled(RegexWordDisabledView {
-                by: c.by,
-                at: c.at,
+            RegexWordEvents::Incremented(event) => RegexWordViewEvent::Activated(RegexWordIncrementedView {
+                by: event.by,
+                at: event.at,
+                nb_selected: event.nb_selected,
             }),
         }
     }
@@ -33,8 +30,7 @@ impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
 #[derive(Clone)]
 pub enum RegexWordEvents {
     Created(RegexWordCreated),
-    Activated(RegexWordActivated),
-    Disabled(RegexWordDisabled),
+    Incremented(RegexWordIncremented),
 }
 
 #[derive(Clone)]
@@ -47,16 +43,8 @@ pub struct RegexWordCreated {
 
 
 #[derive(Clone)]
-pub struct RegexWordActivated {
+pub struct RegexWordIncremented {
     pub by: String,
     pub at: DateTime<Utc>,
-    pub date_activate: NaiveDate,
-}
-
-
-
-#[derive(Clone)]
-pub struct RegexWordDisabled {
-    pub by: String,
-    pub at: DateTime<Utc>,
+    pub nb_selected: u32,
 }

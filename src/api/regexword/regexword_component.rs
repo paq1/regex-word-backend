@@ -4,7 +4,6 @@ use crate::api::regexword::regexword_event_mongo_repository::RegexWordEventMongo
 use crate::api::regexword::regexword_mongo_dao::{RegexWordEventMongoDAO, RegexWordMongoDAO};
 use crate::api::regexword::regexword_mongo_repository::MongoRegexWordRepository;
 use crate::core::regexword::command_handler::create_handler::RegexWordCreateHandler;
-use crate::core::regexword::command_handler::disable_handler::RegexWordDisableHandler;
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::core::regexword::reducer::RegexWordReducer;
@@ -19,7 +18,7 @@ use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::{EntityDBO, EventDBO};
 use futures::lock::Mutex;
 use std::sync::Arc;
-use crate::core::regexword::command_handler::activate_handler::RegexWordActivateHandler;
+use crate::core::regexword::command_handler::increment_handler::RegexWordIncrementNbSelectedHandler;
 
 pub struct RegexWordComponent {
     pub store: Arc<dyn CustomRegexWordRepository>,
@@ -62,8 +61,7 @@ impl RegexWordComponent {
                         RegexWordCreateHandler {}
                     )
                 ),
-                CommandHandler::Update(Box::new(RegexWordDisableHandler {})),
-                CommandHandler::Update(Box::new(RegexWordActivateHandler {})),
+                CommandHandler::Update(Box::new(RegexWordIncrementNbSelectedHandler {})),
             ],
             reducer: RegexWordReducer::new().underlying,
             store: store.clone(),

@@ -1,5 +1,5 @@
-use crate::api::regexword::regexword_dbo::{RegexWordCreatedDbo, RegexWordDboEvent, RegexWordDisabledDbo, RegexWordActivateDbo};
-use crate::core::regexword::data::events::{RegexWordActivated, RegexWordCreated, RegexWordDisabled, RegexWordEvents};
+use crate::api::regexword::regexword_dbo::{RegexWordCreatedDbo, RegexWordDboEvent, RegexWordIncrementedDbo};
+use crate::core::regexword::data::events::{RegexWordIncremented, RegexWordCreated, RegexWordEvents};
 use framework_cqrs_lib::cqrs::core::data::EntityEvent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::EventDBO;
 
@@ -12,19 +12,12 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
                     at: event_dbo.at,
                     data: event_dbo.data.into(),
                 }),
-            RegexWordDboEvent::Activate(event_dbo) =>
-                RegexWordEvents::Activated(
-                    RegexWordActivated {
+            RegexWordDboEvent::Incremented(event_dbo) =>
+                RegexWordEvents::Incremented(
+                    RegexWordIncremented {
                         by: event_dbo.by,
                         at: event_dbo.at,
-                        date_activate: event_dbo.date_activate
-                    }
-                ),
-            RegexWordDboEvent::Disable(event_dbo) =>
-                RegexWordEvents::Disabled(
-                    RegexWordDisabled {
-                        by: event_dbo.by,
-                        at: event_dbo.at,
+                        nb_selected: event_dbo.nb_selected
                     }
                 ),
         }
@@ -52,26 +45,19 @@ pub fn from_regexword_event_to_dbo(dbo: EntityEvent<RegexWordEvents, String>) ->
 impl From<RegexWordEvents> for RegexWordDboEvent {
     fn from(value: RegexWordEvents) -> Self {
         match value {
-            RegexWordEvents::Activated(
-                RegexWordActivated {
+            RegexWordEvents::Incremented(
+                RegexWordIncremented {
                     by,
                     at,
-                    date_activate
+                    nb_selected
                 }
-            ) => RegexWordDboEvent::Activate(RegexWordActivateDbo { by, at, date_activate }),
+            ) => RegexWordDboEvent::Incremented(RegexWordIncrementedDbo { by, at, nb_selected }),
             RegexWordEvents::Created(created) =>
                 RegexWordDboEvent::Created(
                     RegexWordCreatedDbo {
                         by: created.by,
                         at: created.at,
                         data: created.data.into(),
-                    }
-                ),
-            RegexWordEvents::Disabled(disabled) =>
-                RegexWordDboEvent::Disable(
-                    RegexWordDisabledDbo {
-                        by: disabled.by,
-                        at: disabled.at,
                     }
                 ),
         }

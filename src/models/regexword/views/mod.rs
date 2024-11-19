@@ -1,4 +1,4 @@
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -7,27 +7,18 @@ pub struct RegexWordDataView {
     pub regex_parts: Vec<String>,
     pub word: String,
     pub niveau_difficulte: String,
+    pub nb_selected: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(tag = "statusType")]
 pub enum RegexWordViewState {
-    #[serde(rename = "activate")]
-    Activate(RegexWordActivateView),
-    #[serde(rename = "disable")]
-    Disable(RegexWordDisableView),
+    #[serde(rename = "regexword")]
+    Activate(RegexWordView),
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct RegexWordActivateView {
-    #[serde(flatten)]
-    pub data: RegexWordDataView,
-    pub date_activate: NaiveDate,
-}
-
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct RegexWordDisableView {
+pub struct RegexWordView {
     #[serde(flatten)]
     pub data: RegexWordDataView,
 }
@@ -38,9 +29,7 @@ pub enum RegexWordViewEvent {
     #[serde(rename = "created")]
     Created(RegexWordCreatedView),
     #[serde(rename = "activate")]
-    Activated(RegexWordActivatedView),
-    #[serde(rename = "disabled")]
-    Disabled(RegexWordDisabledView),
+    Activated(RegexWordIncrementedView),
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]
@@ -52,14 +41,9 @@ pub struct RegexWordCreatedView {
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]
-pub struct RegexWordActivatedView {
+pub struct RegexWordIncrementedView {
     pub by: String,
     pub at: DateTime<Utc>,
-    pub date_activate: NaiveDate,
+    pub nb_selected: u32,
 }
 
-#[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]
-pub struct RegexWordDisabledView {
-    pub by: String,
-    pub at: DateTime<Utc>,
-}
