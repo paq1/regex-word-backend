@@ -1,5 +1,7 @@
-use crate::core::regexword::services::RegexWordService;
+pub mod rules;
+
 use async_trait::async_trait;
+use crate::core::regexword::services::RegexWordService;
 
 pub struct RegexWordServiceImpl {}
 

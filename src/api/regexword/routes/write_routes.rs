@@ -10,7 +10,7 @@ use framework_cqrs_lib::cqrs::core::event_sourcing::engine::Engine;
 use framework_cqrs_lib::cqrs::infra::helpers::http_response::{CanToHttpResponse, HttpKindResponse};
 use framework_cqrs_lib::cqrs::infra::mappers::event_api_view::from_entity_event_to_view;
 use uuid::Uuid;
-use crate::core::regexword::command_handler::increment_handler::RegexWordSelecteOneHandler;
+use crate::core::regexword::command_handler::select_handler::RegexWordSelecteOneHandler;
 use crate::core::regexword::command_handler::create_handler::RegexWordCreateHandler;
 
 #[utoipa::path(

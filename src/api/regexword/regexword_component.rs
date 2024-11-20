@@ -1,13 +1,16 @@
-use crate::api::regexword::services::RegexWordServiceImpl;
 use crate::api::regexword::regexword_dbo::{RegexWordDboEvent, RegexWordDboState};
 use crate::api::regexword::regexword_event_mongo_repository::RegexWordEventMongoRepository;
 use crate::api::regexword::regexword_mongo_dao::{RegexWordEventMongoDAO, RegexWordMongoDAO};
 use crate::api::regexword::regexword_mongo_repository::MongoRegexWordRepository;
+use crate::api::regexword::services::rules::RulesImpl;
+use crate::api::regexword::services::RegexWordServiceImpl;
 use crate::core::regexword::command_handler::create_handler::RegexWordCreateHandler;
+use crate::core::regexword::command_handler::select_handler::RegexWordSelecteOneHandler;
 use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::core::regexword::reducer::RegexWordReducer;
 use crate::core::regexword::repositories::CustomRegexWordRepository;
+use crate::core::regexword::services::rules::Rules;
 use crate::core::regexword::services::RegexWordService;
 use crate::models::regexword::commands::RegexWordCommands;
 use framework_cqrs_lib::cqrs::core::daos::DAO;
@@ -18,7 +21,6 @@ use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::{EntityDBO, EventDBO};
 use futures::lock::Mutex;
 use std::sync::Arc;
-use crate::core::regexword::command_handler::increment_handler::RegexWordSelecteOneHandler;
 
 pub struct RegexWordComponent {
     pub store: Arc<dyn CustomRegexWordRepository>,
@@ -54,6 +56,12 @@ impl RegexWordComponent {
             RegexWordServiceImpl {}
         );
 
+        let rules: Arc<dyn Rules> = Arc::new(
+            RulesImpl {
+                store: store.clone()
+            }
+        );
+
         let engine: Arc<Engine<RegexWordStates, RegexWordCommands, RegexWordEvents>> = Arc::new(Engine {
             handlers: vec![
                 CommandHandler::Create(
@@ -61,7 +69,7 @@ impl RegexWordComponent {
                         RegexWordCreateHandler {}
                     )
                 ),
-                CommandHandler::Update(Box::new(RegexWordSelecteOneHandler {})),
+                CommandHandler::Update(Box::new(RegexWordSelecteOneHandler { rules: rules.clone() })),
             ],
             reducer: RegexWordReducer::new().underlying,
             store: store.clone(),
