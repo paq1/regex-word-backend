@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -8,6 +8,8 @@ pub struct RegexWordDataView {
     pub word: String,
     pub niveau_difficulte: String,
     pub nb_selected: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_last_selected: Option<NaiveDate>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -28,8 +30,8 @@ pub struct RegexWordView {
 pub enum RegexWordViewEvent {
     #[serde(rename = "created")]
     Created(RegexWordCreatedView),
-    #[serde(rename = "activate")]
-    Activated(RegexWordIncrementedView),
+    #[serde(rename = "selected")]
+    Selected(RegexWordSelectedView),
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]
@@ -41,9 +43,10 @@ pub struct RegexWordCreatedView {
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema, Debug)]
-pub struct RegexWordIncrementedView {
+pub struct RegexWordSelectedView {
     pub by: String,
     pub at: DateTime<Utc>,
     pub nb_selected: u32,
+    pub date_last_selected: NaiveDate,
 }
 

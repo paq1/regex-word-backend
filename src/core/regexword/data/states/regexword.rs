@@ -13,12 +13,13 @@ pub struct RegexWord {
 impl RegexWord {
     pub fn reduce_state(&self, event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
-            RegexWordEvents::Incremented(evt) => Some(
+            RegexWordEvents::Selected(evt) => Some(
                 RegexWordStates::RegexWord(
                     RegexWord {
                         kind: self.kind.clone(),
                         data: RegexWordData {
                             nb_selected: evt.nb_selected,
+                            date_last_selected: Some(evt.date_last_selected),
                             ..self.data.clone()
                         },
                     }
@@ -50,6 +51,7 @@ impl From<RegexWordData> for RegexWordDataView {
             word: value.word,
             niveau_difficulte: value.niveau_difficulte,
             nb_selected: value.nb_selected,
+            date_last_selected: value.date_last_selected,
         }
     }
 }

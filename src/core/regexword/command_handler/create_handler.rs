@@ -44,9 +44,10 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                                     at: context.clone().now,
                                     data: RegexWordData {
                                         word: c.word,
+                                        nb_selected: 0,
+                                        date_last_selected: None,
                                         regex_parts: sanitized_regex_parts,
                                         niveau_difficulte: "simple".to_string(), // TODO : supprimer
-                                        nb_selected: 0,
                                     },
                                 }
                             )

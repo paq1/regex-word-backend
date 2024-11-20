@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 
 
@@ -8,6 +8,8 @@ pub struct RegexWordDataDbo {
     pub regex_parts: Vec<String>,
     pub niveau_difficulte: String,
     pub nb_selected: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_last_selected: Option<NaiveDate>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -25,7 +27,7 @@ pub enum RegexWordDboState {
 #[serde(tag = "type")]
 pub enum RegexWordDboEvent {
     Created(RegexWordCreatedDbo),
-    Incremented(RegexWordIncrementedDbo),
+    Selected(RegexWordSelectedDbo),
 }
 
 
@@ -38,8 +40,9 @@ pub struct RegexWordCreatedDbo {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct RegexWordIncrementedDbo {
+pub struct RegexWordSelectedDbo {
     pub by: String,
     pub at: DateTime<Utc>,
     pub nb_selected: u32,
+    pub date_last_selected: NaiveDate
 }

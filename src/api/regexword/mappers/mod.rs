@@ -11,6 +11,7 @@ impl From<RegexWordDataDbo> for RegexWordData {
             regex_parts: value.regex_parts,
             niveau_difficulte: value.niveau_difficulte,
             nb_selected: value.nb_selected,
+            date_last_selected: value.date_last_selected,
         }
     }
 }
@@ -22,6 +23,7 @@ impl From<RegexWordData> for RegexWordDataDbo {
             regex_parts: value.regex_parts,
             niveau_difficulte: value.niveau_difficulte,
             nb_selected: value.nb_selected,
+            date_last_selected: value.date_last_selected,
         }
     }
 }

@@ -1,5 +1,5 @@
-use crate::api::regexword::regexword_dbo::{RegexWordCreatedDbo, RegexWordDboEvent, RegexWordIncrementedDbo};
-use crate::core::regexword::data::events::{RegexWordIncremented, RegexWordCreated, RegexWordEvents};
+use crate::api::regexword::regexword_dbo::{RegexWordCreatedDbo, RegexWordDboEvent, RegexWordSelectedDbo};
+use crate::core::regexword::data::events::{RegexWordSelected, RegexWordCreated, RegexWordEvents};
 use framework_cqrs_lib::cqrs::core::data::EntityEvent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::EventDBO;
 
@@ -12,12 +12,13 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
                     at: event_dbo.at,
                     data: event_dbo.data.into(),
                 }),
-            RegexWordDboEvent::Incremented(event_dbo) =>
-                RegexWordEvents::Incremented(
-                    RegexWordIncremented {
+            RegexWordDboEvent::Selected(event_dbo) =>
+                RegexWordEvents::Selected(
+                    RegexWordSelected {
                         by: event_dbo.by,
                         at: event_dbo.at,
-                        nb_selected: event_dbo.nb_selected
+                        nb_selected: event_dbo.nb_selected,
+                        date_last_selected: event_dbo.date_last_selected,
                     }
                 ),
         }
@@ -45,13 +46,14 @@ pub fn from_regexword_event_to_dbo(dbo: EntityEvent<RegexWordEvents, String>) ->
 impl From<RegexWordEvents> for RegexWordDboEvent {
     fn from(value: RegexWordEvents) -> Self {
         match value {
-            RegexWordEvents::Incremented(
-                RegexWordIncremented {
+            RegexWordEvents::Selected(
+                RegexWordSelected {
                     by,
                     at,
-                    nb_selected
+                    nb_selected,
+                    date_last_selected,
                 }
-            ) => RegexWordDboEvent::Incremented(RegexWordIncrementedDbo { by, at, nb_selected }),
+            ) => RegexWordDboEvent::Selected(RegexWordSelectedDbo { by, at, nb_selected, date_last_selected }),
             RegexWordEvents::Created(created) =>
                 RegexWordDboEvent::Created(
                     RegexWordCreatedDbo {

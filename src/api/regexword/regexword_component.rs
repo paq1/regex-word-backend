@@ -18,7 +18,7 @@ use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 use framework_cqrs_lib::cqrs::infra::daos::dbos::{EntityDBO, EventDBO};
 use futures::lock::Mutex;
 use std::sync::Arc;
-use crate::core::regexword::command_handler::increment_handler::RegexWordIncrementNbSelectedHandler;
+use crate::core::regexword::command_handler::increment_handler::RegexWordSelecteOneHandler;
 
 pub struct RegexWordComponent {
     pub store: Arc<dyn CustomRegexWordRepository>,
@@ -61,7 +61,7 @@ impl RegexWordComponent {
                         RegexWordCreateHandler {}
                     )
                 ),
-                CommandHandler::Update(Box::new(RegexWordIncrementNbSelectedHandler {})),
+                CommandHandler::Update(Box::new(RegexWordSelecteOneHandler {})),
             ],
             reducer: RegexWordReducer::new().underlying,
             store: store.clone(),

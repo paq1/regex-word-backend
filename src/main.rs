@@ -7,7 +7,7 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 use api::regexword::routes::read_routes::{fetch_many_regexword, fetch_one_regexword};
-use api::regexword::routes::write_routes::{insert_one_regexword, increment_one_regexword};
+use api::regexword::routes::write_routes::{insert_one_regexword, select_one_regexword};
 
 
 use crate::api::regexword::regexword_component::RegexWordComponent;
@@ -68,7 +68,7 @@ async fn main() -> std::io::Result<()> {
                     .service(fetch_many_regexword)
                     .service(fetch_regexword_events)
                     .service(insert_one_regexword)
-                    .service(increment_one_regexword)
+                    .service(select_one_regexword)
                     .service(exemple_api_key)
                     .app_data(web::Data::new(Arc::clone(&regexword_component.engine)))
                     .app_data(

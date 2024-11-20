@@ -4,7 +4,7 @@ use utoipa::ToSchema;
 #[derive(Serialize, Deserialize, Clone, ToSchema)]
 pub enum RegexWordCommands {
     Create(CreateRegexWordCommand),
-    Increment(IncrementRegexWordCommand),
+    SelectOne(SelectOneRegexWordCommand),
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema)]
@@ -13,4 +13,4 @@ pub struct CreateRegexWordCommand {
 }
 
 #[derive(Serialize, Deserialize, Clone, ToSchema)]
-pub struct IncrementRegexWordCommand {}
+pub struct SelectOneRegexWordCommand {}
