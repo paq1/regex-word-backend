@@ -74,7 +74,9 @@ impl RegexWordComponent {
             handlers: vec![
                 CommandHandler::Create(
                     Box::new(
-                        RegexWordCreateHandler {}
+                        RegexWordCreateHandler {
+                            rules: rules.clone()
+                        }
                     )
                 ),
                 CommandHandler::Update(Box::new(RegexWordSelecteOneHandler { rules: rules.clone() })),

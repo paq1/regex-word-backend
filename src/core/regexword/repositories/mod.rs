@@ -10,14 +10,38 @@ use log::{info, warn};
 
 #[async_trait]
 pub trait CustomRegexWordRepository: RepositoryEntity<RegexWordStates, String> {
-    // TODO : ajouter les queries specifiques a l'ontology regexword
-
     async fn fetch_one_word_random(&self, date: &NaiveDate) -> ResultErr<Option<Entity<RegexWordStates, String>>>;
 
     async fn exists_at_date(&self, date: &NaiveDate) -> ResultErr<bool> {
         self.fetch_word_from_date(date)
             .await
             .map(|r| r.is_some())
+    }
+
+    async fn exists_word(&self, word: &str) -> ResultErr<bool> {
+        self.fetch_regexword_from_word(word)
+            .await
+            .map(|r| r.is_some())
+    }
+
+    async fn fetch_regexword_from_word(&self, word: &str) -> ResultErr<Option<Entity<RegexWordStates, String>>> {
+        self
+            .fetch_all(Query {
+                pagination: PaginationDef::default(),
+                filter: Filter::Expr(Expr::ExprStr(ExprGeneric {
+                    field: "data.word".to_string(),
+                    operation: Operation::EqualsTo,
+                    head: word.to_string(),
+                })),
+            })
+            .await
+            .map(|entities| {
+                if entities.len() > 1 {
+                    warn!("found more that one entity for the same word, this not possible for from the business logic");
+                    warn!("nb element: {} for {}", entities.len(), word.to_string());
+                };
+                entities.clone().first().map(|r| r.clone())
+            })
     }
 
     async fn fetch_word_from_date(&self, date: &NaiveDate) -> ResultErr<Option<Entity<RegexWordStates, String>>> {
