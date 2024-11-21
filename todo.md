@@ -9,11 +9,11 @@
 - [x] Selection d'un regexword
   - [x] +1 nb_selected et last_date_selected = today
   - [x] il ne doit pas y avoir de mot selectionné pour aujourd'hui
-- [ ] Fetch mot du jour
+- [x] Fetch mot du jour
   - [x] Si pas de mot pour aujourd'hui en selectionner 1
   - [x] Masquer le mot du jour pour le moment
-- [ ] Verifier le mot du jour
-  - [ ] Si pas de mot du jour, lever une erreur (erreur 500)
+- [x] Verifier le mot du jour
+  - [x] Si pas de mot du jour, lever une erreur (erreur 500)
 - [ ] Déployer le backend en prod:
   - [ ] configurer le sous domain
   - [ ] mettre la config nginx

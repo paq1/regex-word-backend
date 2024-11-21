@@ -16,7 +16,13 @@ use crate::models::regexword::commands::{RegexWordCommands, SelectOneRegexWordCo
 pub trait SelectRegexWordService: Send + Sync {
     /// WARN: this service mustn't be injected in command handler (cyclic dependency)
 
-    async fn get_current_or_select_one(&self, ctx: Context) -> ResultErr<Entity<RegexWordStates, String>> {
+    async fn valid_current_word(&self, word: &str, ctx: &Context) -> ResultErr<bool> {
+        self.get_current_or_select_one(ctx)
+            .await
+            .map(|entity| entity.data.get_word().as_str() == word)
+    }
+
+    async fn get_current_or_select_one(&self, ctx: &Context) -> ResultErr<Entity<RegexWordStates, String>> {
         let regex_already_exist = self.get_repository().exists_at_date(&ctx.now.date_naive()).await?;
         if regex_already_exist {
             self.get_repository()
@@ -38,7 +44,7 @@ pub trait SelectRegexWordService: Send + Sync {
         }
     }
 
-    async fn unsafe_select_regex(&self, ctx: Context) -> ResultErr<Entity<RegexWordStates, String>> {
+    async fn unsafe_select_regex(&self, ctx: &Context) -> ResultErr<Entity<RegexWordStates, String>> {
         let mot = self.get_repository()
             .fetch_one_word_random(&ctx.now.date_naive()).await
             .and_then(|data| {

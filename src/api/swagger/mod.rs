@@ -5,6 +5,7 @@ use crate::api::regexword::routes::exemple_wit_api_key_routes::__path_exemple_ap
 use crate::api::regexword::routes::read_routes::__path_fetch_regexword_events;
 use crate::api::regexword::routes::read_routes::__path_fetch_many_regexword;
 use crate::api::regexword::routes::read_routes::__path_dayword_regexword;
+use crate::api::regexword::routes::read_routes::__path_check_regexword;
 use crate::api::regexword::routes::read_routes::__path_fetch_one_regexword;
 use crate::api::regexword::routes::write_routes::__path_insert_one_regexword;
 use crate::api::regexword::routes::write_routes::__path_select_one_regexword;
@@ -20,6 +21,7 @@ use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
 #[openapi(
     paths(
         dayword_regexword,
+        check_regexword,
         fetch_many_regexword,
         fetch_one_regexword,
         insert_one_regexword,

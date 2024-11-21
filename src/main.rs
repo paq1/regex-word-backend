@@ -12,7 +12,7 @@ use api::regexword::routes::write_routes::{insert_one_regexword, select_one_rege
 
 use crate::api::regexword::regexword_component::RegexWordComponent;
 use crate::api::regexword::routes::exemple_wit_api_key_routes::exemple_api_key;
-use crate::api::regexword::routes::read_routes::{fetch_regexword_events, fetch_one_regexword_event, dayword_regexword};
+use crate::api::regexword::routes::read_routes::{fetch_regexword_events, fetch_one_regexword_event, dayword_regexword, check_regexword};
 use crate::api::swagger::ApiDoc;
 use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 
@@ -64,6 +64,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/regexword")
                     .service(dayword_regexword)
+                    .service(check_regexword)
                     .service(fetch_one_regexword)
                     .service(fetch_one_regexword_event)
                     .service(fetch_many_regexword)
