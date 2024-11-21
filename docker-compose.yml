@@ -16,8 +16,8 @@ services:
       - regex_word_backend-network
   db:
     image: mongo:latest
-#    ports:
-#      - "27017:27017"
+    ports:
+      - "27017:27017"
     volumes:
       - regex_word_backend_db_data:/data/db
     networks:

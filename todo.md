@@ -1,9 +1,9 @@
 # todo
 
-- [ ] Creation d'un regexword
-  - [ ] mot ne doit pas exister dans le référentiel regexword, (erreur 400) 
+- [x] Creation d'un regexword
+  - [x] mot ne doit pas exister dans le référentiel regexword, (erreur 400) 
   - [x] si mot < 3 caractere (erreur 400)
-  - [ ] mot ne doit pas contenir d'accents ou caractere autre que [a-z]{3,} (erreur 400)
+  - [x] mot ne doit pas contenir d'accents ou caractere autre que [a-z]{3,} (erreur 400)
   - [x] généré une regex pour le mot
     - [x] si le nombre de regex > 3 alors merge les derniers elements
 - [x] Selection d'un regexword
@@ -14,7 +14,9 @@
   - [x] Masquer le mot du jour pour le moment
 - [x] Verifier le mot du jour
   - [x] Si pas de mot du jour, lever une erreur (erreur 500)
-- [ ] Déployer le backend en prod:
-  - [ ] configurer le sous domain
-  - [ ] mettre la config nginx
-  - [ ] généré les certificat ssl
+- [x] Déployer le backend en prod:
+  - [x] configurer le sous domain
+  - [x] mettre la config nginx
+  - [x] généré les certificat ssl
+- [ ] load initial
+  - [ ] charger tout les mots francais dans le référentiel
