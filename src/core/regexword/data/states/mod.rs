@@ -18,9 +18,21 @@ impl RegexWordStates {
         }
     }
 
+    pub fn get_word(&self) -> String {
+        match self {
+            RegexWordStates::RegexWord(regexword) => regexword.data.word.clone()
+        }
+    }
+
     pub fn get_nb_selected(&self) -> u32 {
         match self {
             RegexWordStates::RegexWord(regexword) => regexword.data.nb_selected
+        }
+    }
+
+    pub fn get_regex_parts(&self) -> Vec<String> {
+        match self {
+            RegexWordStates::RegexWord(regexword) => regexword.data.regex_parts.clone()
         }
     }
 

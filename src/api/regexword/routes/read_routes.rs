@@ -6,8 +6,10 @@ use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 
 use crate::api::regexword::query::{from_regexword_query_to_query_repo, RegexWordQuery};
 use crate::core::regexword::data::events::RegexWordEvents;
+use crate::core::regexword::mappers::regexword_to_entity_hidden_view;
 use crate::core::regexword::repositories::CustomRegexWordRepository;
-use crate::models::regexword::views::{RegexWordViewState, RegexWordViewEvent};
+use crate::core::regexword::services::select_regexword_service::SelectRegexWordService;
+use crate::models::regexword::views::{RegexWordViewEvent, RegexWordViewState};
 use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::repositories::events::RepositoryEvents;
 use framework_cqrs_lib::cqrs::core::repositories::filter::{Expr, ExprGeneric, Filter, Operation};
@@ -18,6 +20,100 @@ use framework_cqrs_lib::cqrs::infra::mappers::state_view::{from_states_to_entity
 use framework_cqrs_lib::cqrs::models::errors::StandardHttpError;
 use framework_cqrs_lib::cqrs::models::jsonapi::CanBeView;
 use framework_cqrs_lib::cqrs::models::views::entities::EntityView;
+use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
+use crate::models::regexword::views::check_view::CheckView;
+
+#[utoipa::path(
+    tag = "regexword",
+    path = "/regexword/dayword",
+    responses(
+        (status = 200, description = "fait ca", body = Paged<EntityView<RegexWordViewState>>)
+    ),
+    params(
+        RegexWordQuery
+    )
+)]
+#[get("/dayword")]
+pub async fn dayword_regexword(
+    select_word_service: web::Data<Arc<dyn SelectRegexWordService>>,
+    http_error: web::Data<StandardHttpError>,
+    query: Query<RegexWordQuery>,
+    req: HttpRequest,
+) -> impl Responder {
+    let ctx: Context = Context::empty()
+        .decore_with_http_header(&req)
+        .clone_with_filter(
+            HashMap::from([
+                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
+                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
+            ])
+        );
+
+    match select_word_service
+        .get_current_or_select_one(&ctx)
+        .await
+        .and_then(|entity| {
+            regexword_to_entity_hidden_view(&entity, &ctx)
+        }) {
+        Ok(view) => {
+            HttpResponse::Ok().json(
+                DataWrapperView {
+                    data: view
+                }
+            )
+        }
+        _ => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+    }
+}
+
+#[utoipa::path(
+    tag = "regexword",
+    path = "/regexword/check/{word}",
+    responses(
+        (status = 200, description = "fait ca", body = Paged<EntityView<RegexWordViewState>>)
+    ),
+    params(
+        RegexWordQuery
+    )
+)]
+#[get("/check/{word}")]
+pub async fn check_regexword(
+    path: web::Path<String>,
+    select_word_service: web::Data<Arc<dyn SelectRegexWordService>>,
+    http_error: web::Data<StandardHttpError>,
+    query: Query<RegexWordQuery>,
+    req: HttpRequest,
+) -> impl Responder {
+    let word = path.into_inner();
+
+    let ctx: Context = Context::empty()
+        .decore_with_http_header(&req)
+        .clone_with_filter(
+            HashMap::from([
+                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
+                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
+            ])
+        );
+
+    select_word_service
+        .valid_current_word(&word, &ctx)
+        .await
+        .map(|res| {
+            HttpResponse::Ok().json(
+                DataWrapperView {
+                    data: EntityView {
+                        r#type: "check".to_string(),
+                        id: format!("{res}"),
+                        links: None,
+                        attributes: CheckView {
+                            is_valid: res,
+                        }
+                    }
+                }
+            )
+        })
+        .unwrap_or(HttpResponse::InternalServerError().json(&http_error.internal_server_error))
+}
 
 #[utoipa::path(
     tag = "regexword",

@@ -891,9 +891,9 @@ dependencies = [
 
 [[package]]
 name = "framework-cqrs-lib"
-version = "0.5.4"
+version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8fb14109b4aac1f4e85e6c1369c2912f86a922bf2a3fa9d3771942950766c69"
+checksum = "e82166cb107dacd5533dee25baefd86fc2ff71832727bec6bfa60b2aa139481f"
 dependencies = [
  "actix-web",
  "async-trait",

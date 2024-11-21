@@ -12,7 +12,7 @@ use api::regexword::routes::write_routes::{insert_one_regexword, select_one_rege
 
 use crate::api::regexword::regexword_component::RegexWordComponent;
 use crate::api::regexword::routes::exemple_wit_api_key_routes::exemple_api_key;
-use crate::api::regexword::routes::read_routes::{fetch_regexword_events, fetch_one_regexword_event};
+use crate::api::regexword::routes::read_routes::{fetch_regexword_events, fetch_one_regexword_event, dayword_regexword, check_regexword};
 use crate::api::swagger::ApiDoc;
 use framework_cqrs_lib::cqrs::infra::authentication::AuthenticationComponent;
 
@@ -63,6 +63,8 @@ async fn main() -> std::io::Result<()> {
             // regexword services
             .service(
                 web::scope("/regexword")
+                    .service(dayword_regexword)
+                    .service(check_regexword)
                     .service(fetch_one_regexword)
                     .service(fetch_one_regexword_event)
                     .service(fetch_many_regexword)
@@ -79,6 +81,9 @@ async fn main() -> std::io::Result<()> {
                     )
                     .app_data(
                         web::Data::new(Arc::clone(&regexword_component.service))
+                    )
+                    .app_data(
+                        web::Data::new(Arc::clone(&regexword_component.select_regexword_service))
                     )
                     .app_data(
                         web::Data::new(api_key_component.service.clone())

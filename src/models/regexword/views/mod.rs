@@ -1,3 +1,5 @@
+pub mod check_view;
+
 use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -10,6 +12,41 @@ pub struct RegexWordDataView {
     pub nb_selected: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date_last_selected: Option<NaiveDate>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(tag = "regexPartType")]
+pub enum RegexPartView {
+    #[serde(rename = "enable")]
+    Enabled(RegexPartEnableView),
+    #[serde(rename = "disable")]
+    Disabled(RegexPartDisableView),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RegexPartEnableView {
+    pub regex: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RegexPartDisableView {
+    pub active_at: DateTime<Utc>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SelectedWordView {
+    // pub entity_id: String,
+    pub regex_parts: Vec<RegexPartView>,
+    pub niveau_difficulte: String,
+    pub word_info: WordInfoView
+}
+
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct WordInfoView {
+    // pub entity_id: String,
+    pub first_letter: String,
+    pub size: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
