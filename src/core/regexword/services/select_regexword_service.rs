@@ -19,7 +19,7 @@ pub trait SelectRegexWordService: Send + Sync {
     async fn valid_current_word(&self, word: &str, ctx: &Context) -> ResultErr<bool> {
         self.get_current_or_select_one(ctx)
             .await
-            .map(|entity| entity.data.get_word().as_str() == word)
+            .map(|entity| entity.data.get_word().as_str() == word.to_lowercase())
     }
 
     async fn get_current_or_select_one(&self, ctx: &Context) -> ResultErr<Entity<RegexWordStates, String>> {

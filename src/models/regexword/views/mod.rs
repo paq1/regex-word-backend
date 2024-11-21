@@ -38,6 +38,15 @@ pub struct SelectedWordView {
     // pub entity_id: String,
     pub regex_parts: Vec<RegexPartView>,
     pub niveau_difficulte: String,
+    pub word_info: WordInfoView
+}
+
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct WordInfoView {
+    // pub entity_id: String,
+    pub first_letter: String,
+    pub size: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

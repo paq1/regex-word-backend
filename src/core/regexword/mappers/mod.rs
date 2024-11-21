@@ -5,10 +5,13 @@ use framework_cqrs_lib::cqrs::models::errors::ResultErr;
 use framework_cqrs_lib::cqrs::models::views::entities::EntityView;
 use crate::core::helpers::context::{ctx_is_after_datetime, give_date_time_with_hours};
 use crate::core::regexword::data::states::RegexWordStates;
-use crate::models::regexword::views::{RegexPartDisableView, RegexPartEnableView, RegexPartView, SelectedWordView};
+use crate::models::regexword::views::{RegexPartDisableView, RegexPartEnableView, RegexPartView, SelectedWordView, WordInfoView};
 
 
 pub fn regexword_to_entity_hidden_view(entity: &Entity<RegexWordStates, String>, ctx: &Context) -> ResultErr<EntityView<SelectedWordView>> {
+
+    let word = entity.data.get_word();
+
     from_state_to_view(&entity.data, ctx)
         .map(|regex_parts| {
             EntityView {
@@ -17,7 +20,11 @@ pub fn regexword_to_entity_hidden_view(entity: &Entity<RegexWordStates, String>,
                 links: None,
                 attributes: SelectedWordView {
                     niveau_difficulte: "simple".to_string(), // cette donner partira
-                    regex_parts
+                    regex_parts,
+                    word_info: WordInfoView {
+                        first_letter: word.chars().take(1).collect::<String>().to_uppercase(),
+                        size: word.len() as u32
+                    }
                 }
             }
         })
