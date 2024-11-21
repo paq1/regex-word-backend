@@ -18,5 +18,5 @@
   - [x] configurer le sous domain
   - [x] mettre la config nginx
   - [x] généré les certificat ssl
-- [ ] load initial
-  - [ ] charger tout les mots francais dans le référentiel
+- [x] load initial
+  - [x] charger tout les mots francais dans le référentiel
