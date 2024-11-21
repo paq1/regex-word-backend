@@ -13,6 +13,32 @@ pub struct RegexWordDataView {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(tag = "regexPartType")]
+pub enum RegexPartView {
+    #[serde(rename = "enable")]
+    Enabled(RegexPartEnableView),
+    #[serde(rename = "disable")]
+    Disabled(RegexPartDisableView),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RegexPartEnableView {
+    pub regex: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RegexPartDisableView {
+    pub active_at: DateTime<Utc>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SelectedWordView {
+    // pub entity_id: String,
+    pub regex_parts: Vec<RegexPartView>,
+    pub niveau_difficulte: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(tag = "statusType")]
 pub enum RegexWordViewState {
     #[serde(rename = "regexword")]

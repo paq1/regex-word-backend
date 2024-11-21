@@ -24,6 +24,12 @@ impl RegexWordStates {
         }
     }
 
+    pub fn get_regex_parts(&self) -> Vec<String> {
+        match self {
+            RegexWordStates::RegexWord(regexword) => regexword.data.regex_parts.clone()
+        }
+    }
+
     pub fn reduce_state_from_empty(event: RegexWordEvents) -> Option<RegexWordStates> {
         match event {
             Created(data) =>

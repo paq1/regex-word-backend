@@ -1,7 +1,8 @@
 pub mod rules;
+pub mod select_regexword_service_impl;
 
-use async_trait::async_trait;
 use crate::core::regexword::services::RegexWordService;
+use async_trait::async_trait;
 
 pub struct RegexWordServiceImpl {}
 
