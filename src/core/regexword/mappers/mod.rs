@@ -32,7 +32,7 @@ pub fn regexword_to_entity_hidden_view(entity: &Entity<RegexWordStates, String>,
 
 fn from_state_to_view(state: &RegexWordStates, ctx: &Context) -> ResultErr<Vec<RegexPartView>> {
     let hours = vec![
-        give_date_time_with_hours(8, ctx)?,
+        give_date_time_with_hours(7, ctx)?,
         give_date_time_with_hours(11, ctx)?,
         give_date_time_with_hours(15, ctx)?,
     ]

@@ -21,6 +21,7 @@ futures = "0.3.30"
 dotenv = "0.15.0"
 jsonwebtoken = "9.3.0"
 chrono = { version = "0.4.38", features = ["serde"] }
+chrono-tz = "0.10.0"
 moka = { version = "0.12", features = ["future"] }
 reqwest = { version = "0.12", features = ["json"] }
 passwords = { version = "3.1.16", features = ["crypto", "common-password"]}
