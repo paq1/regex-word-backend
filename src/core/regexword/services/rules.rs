@@ -43,7 +43,6 @@ pub trait Rules: Sync + Send {
                 status: Some(400u16),
             }))
         }
-
     }
 
     fn get_repository(&self) -> Arc<dyn CustomRegexWordRepository>;

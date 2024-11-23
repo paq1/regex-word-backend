@@ -17,7 +17,6 @@ async fn main() -> ResultErr<()>{
 
     println!("nombre de mots : {nb}");
 
-    info!("lancement du server");
     let http_client: Arc<Client> = Arc::new(Client::new());
 
     for w in dictionnaire_service.words.iter() {
