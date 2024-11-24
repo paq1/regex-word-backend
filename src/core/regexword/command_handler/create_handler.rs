@@ -10,11 +10,11 @@ use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::event_sourcing::CommandHandlerCreate;
 use framework_cqrs_lib::cqrs::models::errors::{Error, ErrorHttpCustom, ResultErr};
 use regex_generator::core::services::regex_generator::RegexGenerator;
-use crate::core::regexword::services::random_order_generator::RandomOrderGeneratorService;
+use crate::core::regexword::services::random::CanGenerateRandomOrder;
 
 pub struct RegexWordCreateHandler {
     pub rules: Arc<dyn Rules>,
-    pub random_order_generator_service: Arc<dyn RandomOrderGeneratorService>
+    pub random_order_generator_service: Arc<dyn CanGenerateRandomOrder>
 }
 #[async_trait]
 impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> for RegexWordCreateHandler {
