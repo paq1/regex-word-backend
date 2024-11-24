@@ -38,9 +38,8 @@ pub struct SelectedWordView {
     // pub entity_id: String,
     pub regex_parts: Vec<RegexPartView>,
     pub niveau_difficulte: String,
-    pub word_info: WordInfoView
+    pub word_info: WordInfoView,
 }
-
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct WordInfoView {
@@ -85,5 +84,6 @@ pub struct RegexWordSelectedView {
     pub at: DateTime<Utc>,
     pub nb_selected: u32,
     pub date_last_selected: NaiveDate,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub regex_parts: Option<Vec<String>>,
 }
-

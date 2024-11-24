@@ -44,5 +44,7 @@ pub struct RegexWordSelectedDbo {
     pub by: String,
     pub at: DateTime<Utc>,
     pub nb_selected: u32,
-    pub date_last_selected: NaiveDate
+    pub date_last_selected: NaiveDate,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub regex_parts: Option<Vec<String>>,
 }

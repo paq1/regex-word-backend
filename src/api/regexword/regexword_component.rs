@@ -88,7 +88,7 @@ impl RegexWordComponent {
                         }
                     )
                 ),
-                CommandHandler::Update(Box::new(RegexWordSelecteOneHandler { rules: rules.clone() })),
+                CommandHandler::Update(Box::new(RegexWordSelecteOneHandler { rules: rules.clone(), regex_generator_service: generate_regex_service.clone() })),
             ],
             reducer: RegexWordReducer::new().underlying,
             store: store.clone(),

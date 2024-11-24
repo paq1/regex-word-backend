@@ -28,11 +28,11 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
             RegexWordCommands::Create(c) => {
                 let _ = self.rules.can_insert(c.word.as_str()).await?;
 
-                let sanitized_regex_parts = self.generate_regex_service.generate_regex(&c.word, 3)?;
+                let regex_parts = self.generate_regex_service.generate_regex(&c.word, 3)?;
 
                 let order = self.random_order_generator_service.generate_random_selected_order()?;
 
-                if sanitized_regex_parts.len() != 3 {
+                if regex_parts.len() != 3 {
                     Err(Error::Http(ErrorHttpCustom::new("Erreur lors de la génération des regexes", "78failr", vec![], Some(500u16))))
                 } else {
                     Ok(
@@ -44,7 +44,7 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                                     word: c.word,
                                     nb_selected: 0,
                                     date_last_selected: None,
-                                    regex_parts: sanitized_regex_parts,
+                                    regex_parts,
                                     order,
                                 },
                             }

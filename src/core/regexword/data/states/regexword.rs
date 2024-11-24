@@ -20,6 +20,7 @@ impl RegexWord {
                         data: RegexWordData {
                             nb_selected: evt.nb_selected,
                             date_last_selected: Some(evt.date_last_selected),
+                            regex_parts: evt.regex_parts.unwrap_or(self.data.regex_parts.clone()),
                             ..self.data.clone()
                         },
                     }

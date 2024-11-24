@@ -23,6 +23,7 @@ impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
                 at: event.at,
                 nb_selected: event.nb_selected,
                 date_last_selected: event.date_last_selected,
+                regex_parts: event.regex_parts,
             }),
         }
     }
@@ -50,4 +51,5 @@ pub struct RegexWordSelected {
     pub at: DateTime<Utc>,
     pub nb_selected: u32,
     pub date_last_selected: NaiveDate,
+    pub regex_parts: Option<Vec<String>>,
 }

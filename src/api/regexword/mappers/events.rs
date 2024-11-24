@@ -19,6 +19,7 @@ impl From<RegexWordDboEvent> for RegexWordEvents {
                         at: event_dbo.at,
                         nb_selected: event_dbo.nb_selected,
                         date_last_selected: event_dbo.date_last_selected,
+                        regex_parts: event_dbo.regex_parts,
                     }
                 ),
         }
@@ -52,8 +53,9 @@ impl From<RegexWordEvents> for RegexWordDboEvent {
                     at,
                     nb_selected,
                     date_last_selected,
+                    regex_parts
                 }
-            ) => RegexWordDboEvent::Selected(RegexWordSelectedDbo { by, at, nb_selected, date_last_selected }),
+            ) => RegexWordDboEvent::Selected(RegexWordSelectedDbo { by, at, nb_selected, date_last_selected, regex_parts }),
             RegexWordEvents::Created(created) =>
                 RegexWordDboEvent::Created(
                     RegexWordCreatedDbo {
