@@ -69,7 +69,7 @@ pub trait SelectRegexWordService: Send + Sync {
 
         let result = self.engine_regex_word()
             .compute(
-                RegexWordCommands::SelectOne(SelectOneRegexWordCommand {}),
+                RegexWordCommands::SelectOne(SelectOneRegexWordCommand { reset_regex: Some(true) }),
                 mot.entity_id,
                 RegexWordSelecteOneHandler::handler_name().to_string(),
                 &ctx

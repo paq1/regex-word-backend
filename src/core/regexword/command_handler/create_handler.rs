@@ -9,12 +9,13 @@ use crate::models::regexword::commands::RegexWordCommands;
 use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::event_sourcing::CommandHandlerCreate;
 use framework_cqrs_lib::cqrs::models::errors::{Error, ErrorHttpCustom, ResultErr};
-use regex_generator::core::services::regex_generator::RegexGenerator;
+use crate::core::regexword::services::generate_regex::CanGenerateRegex;
 use crate::core::regexword::services::random::CanGenerateRandomOrder;
 
 pub struct RegexWordCreateHandler {
     pub rules: Arc<dyn Rules>,
-    pub random_order_generator_service: Arc<dyn CanGenerateRandomOrder>
+    pub random_order_generator_service: Arc<dyn CanGenerateRandomOrder>,
+    pub generate_regex_service: Arc<dyn CanGenerateRegex>,
 }
 #[async_trait]
 impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> for RegexWordCreateHandler {
@@ -27,16 +28,7 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
             RegexWordCommands::Create(c) => {
                 let _ = self.rules.can_insert(c.word.as_str()).await?;
 
-                let regexes = RegexGenerator::regexes_splited(&c.word, Some((c.word.len() / 3) as u32)).into_iter().map(|rw| rw.regex).collect::<Vec<_>>();
-
-                let sanitized_regex_parts = if regexes.len() > 3 {
-                    let heads = regexes.clone().into_iter().take(2).collect::<Vec<_>>();
-                    let lasts = regexes[2..].into_iter().map(|chaine| chaine.clone()).collect::<Vec<_>>().join("");
-                    let lasts_vec = vec![lasts];
-                    [&heads[..], &lasts_vec[..]].concat()
-                } else {
-                    regexes
-                };
+                let sanitized_regex_parts = self.generate_regex_service.generate_regex(&c.word, 3)?;
 
                 let order = self.random_order_generator_service.generate_random_selected_order()?;
 

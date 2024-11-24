@@ -25,6 +25,7 @@ use futures::lock::Mutex;
 use std::sync::Arc;
 use framework_cqrs_lib::cqrs::infra::daos::database_mongo::DatabaseMongo;
 use crate::api::regexword::services::random::random_generator::RandomGenerator;
+use crate::core::regexword::services::generate_regex::{CanGenerateRegex, GenerateRegexService};
 use crate::core::regexword::services::random::can_random::CanRandom;
 use crate::core::regexword::services::random::RandomOrderGeneratorService;
 
@@ -68,7 +69,7 @@ impl RegexWordComponent {
 
         let random_generator: Arc<dyn CanRandom> = Arc::new(RandomGenerator {});
         let random_order_generator = Arc::new(RandomOrderGeneratorService { random_generator: random_generator.clone() });
-
+        let generate_regex_service: Arc<dyn CanGenerateRegex> = Arc::new(GenerateRegexService {});
 
         let rules: Arc<dyn Rules> = Arc::new(
             RulesImpl {
@@ -82,7 +83,8 @@ impl RegexWordComponent {
                     Box::new(
                         RegexWordCreateHandler {
                             rules: rules.clone(),
-                            random_order_generator_service: random_order_generator.clone()
+                            random_order_generator_service: random_order_generator.clone(),
+                            generate_regex_service: generate_regex_service.clone(),
                         }
                     )
                 ),
