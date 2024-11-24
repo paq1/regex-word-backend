@@ -2309,6 +2309,7 @@ dependencies = [
  "mongodb",
  "openssl-sys",
  "passwords",
+ "rand",
  "regex-generator",
  "reqwest",
  "serde",

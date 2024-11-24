@@ -9,7 +9,7 @@ impl From<RegexWordDataDbo> for RegexWordData {
         Self {
             word: value.word,
             regex_parts: value.regex_parts,
-            niveau_difficulte: value.niveau_difficulte,
+            order: value.order,
             nb_selected: value.nb_selected,
             date_last_selected: value.date_last_selected,
         }
@@ -21,7 +21,7 @@ impl From<RegexWordData> for RegexWordDataDbo {
         Self {
             word: value.word,
             regex_parts: value.regex_parts,
-            niveau_difficulte: value.niveau_difficulte,
+            order: value.order,
             nb_selected: value.nb_selected,
             date_last_selected: value.date_last_selected,
         }

@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
 use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::data::Entity;
-use framework_cqrs_lib::cqrs::models::errors::ResultErr;
+use framework_cqrs_lib::cqrs::models::errors::{Error, ResultErr};
 use framework_cqrs_lib::cqrs::models::views::entities::EntityView;
 use crate::core::helpers::context::{ctx_is_after_datetime, give_date_time_with_hours};
+use crate::core::helpers::resulterr::SanitizeVecResultErr;
 use crate::core::regexword::data::states::RegexWordStates;
 use crate::models::regexword::views::{RegexPartDisableView, RegexPartEnableView, RegexPartView, SelectedWordView, WordInfoView};
 
@@ -31,11 +32,22 @@ pub fn regexword_to_entity_hidden_view(entity: &Entity<RegexWordStates, String>,
 }
 
 fn from_state_to_view(state: &RegexWordStates, ctx: &Context) -> ResultErr<Vec<RegexPartView>> {
-    let hours = vec![
+
+
+    let h = vec![
         give_date_time_with_hours(7, ctx)?,
         give_date_time_with_hours(11, ctx)?,
         give_date_time_with_hours(15, ctx)?,
-    ]
+    ];
+
+    let r  = state
+        .get_order()
+        .into_iter()
+        .map(|index| h.get((index - 1) as usize).ok_or(Error::Simple("out of bounds".to_string())))
+        .collect::<Vec<_>>()
+        .sanitize_vec_result_err()?;
+
+    let hours = r
         .into_iter()
         .map(|date_apparition| {
             let is_hide = ctx_is_after_datetime(&date_apparition, ctx);

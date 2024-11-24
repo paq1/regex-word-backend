@@ -8,7 +8,7 @@ use utoipa::ToSchema;
 pub struct RegexWordDataView {
     pub regex_parts: Vec<String>,
     pub word: String,
-    pub niveau_difficulte: String,
+    pub order: Vec<u32>,
     pub nb_selected: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date_last_selected: Option<NaiveDate>,

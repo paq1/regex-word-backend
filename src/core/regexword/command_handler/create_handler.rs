@@ -10,9 +10,11 @@ use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::event_sourcing::CommandHandlerCreate;
 use framework_cqrs_lib::cqrs::models::errors::{Error, ErrorHttpCustom, ResultErr};
 use regex_generator::core::services::regex_generator::RegexGenerator;
+use crate::core::regexword::services::random_order_generator::RandomOrderGeneratorService;
 
 pub struct RegexWordCreateHandler {
     pub rules: Arc<dyn Rules>,
+    pub random_order_generator_service: Arc<dyn RandomOrderGeneratorService>
 }
 #[async_trait]
 impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> for RegexWordCreateHandler {
@@ -36,6 +38,8 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                     regexes
                 };
 
+                let order = self.random_order_generator_service.generate_random_selected_order()?;
+
                 if sanitized_regex_parts.len() != 3 {
                     Err(Error::Http(ErrorHttpCustom::new("Erreur lors de la génération des regexes", "78failr", vec![], Some(500u16))))
                 } else {
@@ -49,7 +53,7 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                                     nb_selected: 0,
                                     date_last_selected: None,
                                     regex_parts: sanitized_regex_parts,
-                                    niveau_difficulte: "simple".to_string(), // TODO : supprimer
+                                    order,
                                 },
                             }
                         )

@@ -24,6 +24,7 @@ use framework_cqrs_lib::cqrs::infra::daos::dbos::{EntityDBO, EventDBO};
 use futures::lock::Mutex;
 use std::sync::Arc;
 use framework_cqrs_lib::cqrs::infra::daos::database_mongo::DatabaseMongo;
+use crate::api::regexword::services::random_order_generator_impl::RandomOrderGeneratorImpl;
 
 pub struct RegexWordComponent {
     pub store: Arc<dyn CustomRegexWordRepository>,
@@ -62,6 +63,7 @@ impl RegexWordComponent {
         let service: Arc<dyn RegexWordService> = Arc::new(
             RegexWordServiceImpl {}
         );
+        let random_order_generator = Arc::new(RandomOrderGeneratorImpl {});
 
 
         let rules: Arc<dyn Rules> = Arc::new(
@@ -75,7 +77,8 @@ impl RegexWordComponent {
                 CommandHandler::Create(
                     Box::new(
                         RegexWordCreateHandler {
-                            rules: rules.clone()
+                            rules: rules.clone(),
+                            random_order_generator_service: random_order_generator.clone()
                         }
                     )
                 ),

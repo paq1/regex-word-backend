@@ -18,6 +18,12 @@ impl RegexWordStates {
         }
     }
 
+    pub fn get_order(&self) -> Vec<u32> {
+        match self {
+            RegexWordStates::RegexWord(regexword) => regexword.data.order.clone(),
+        }
+    }
+
     pub fn get_word(&self) -> String {
         match self {
             RegexWordStates::RegexWord(regexword) => regexword.data.word.clone()

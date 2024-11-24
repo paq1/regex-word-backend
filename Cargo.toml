@@ -31,3 +31,4 @@ mongodb = { version = "3.0.0", features = ["sync"]}
 uuid = {version = "1.9.1", features = ["v4", "fast-rng", "macro-diagnostics"]}
 regex-generator = "0.1.0"
 dictionnaire = "0.1.2"
+rand = "0.8.4"

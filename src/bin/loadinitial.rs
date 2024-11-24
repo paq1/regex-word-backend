@@ -1,9 +1,7 @@
-use framework_cqrs_lib::cqrs::infra::api_key::component::ApiKeyComponent;
 use std::sync::Arc;
 use framework_cqrs_lib::cqrs::models::errors::{Error, ResultErr};
-use log::{error, info, warn};
+use log::warn;
 use reqwest::{Client, StatusCode};
-use regex_word_backend::api::regexword::regexword_component::RegexWordComponent;
 use regex_word_backend::models::regexword::commands::CreateRegexWordCommand;
 
 #[tokio::main]
@@ -25,7 +23,7 @@ async fn main() -> ResultErr<()>{
         };
 
         let response = http_client
-            .post("https://rgw-api.regexword.fr/regexword/commands/create")
+            .post("http://localhost:8080/regexword/commands/create")
             .json(&cmd)
             .send()
             .await

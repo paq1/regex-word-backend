@@ -11,7 +11,7 @@ impl CanBeView<RegexWordViewEvent> for RegexWordEvents {
                 data: RegexWordDataView {
                     regex_parts: c.data.regex_parts,
                     word: c.data.word,
-                    niveau_difficulte: c.data.niveau_difficulte,
+                    order: c.data.order,
                     nb_selected: c.data.nb_selected,
                     date_last_selected: c.data.date_last_selected,
                 },

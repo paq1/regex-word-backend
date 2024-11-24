@@ -49,7 +49,7 @@ impl From<RegexWordData> for RegexWordDataView {
         Self {
             regex_parts: value.regex_parts,
             word: value.word,
-            niveau_difficulte: value.niveau_difficulte,
+            order: value.order,
             nb_selected: value.nb_selected,
             date_last_selected: value.date_last_selected,
         }
