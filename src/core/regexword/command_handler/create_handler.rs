@@ -41,7 +41,7 @@ impl CommandHandlerCreate<RegexWordStates, RegexWordCommands, RegexWordEvents> f
                                 by: context.clone().subject,
                                 at: context.clone().now,
                                 data: RegexWordData {
-                                    word: c.word,
+                                    word: c.word.to_lowercase(),
                                     nb_selected: 0,
                                     date_last_selected: None,
                                     regex_parts,
