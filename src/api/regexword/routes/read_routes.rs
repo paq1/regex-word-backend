@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::HashMap;use std::iter::Iterator;
 use std::sync::Arc;
 
 use actix_web::web::Query;
@@ -9,6 +9,7 @@ use crate::core::regexword::data::events::RegexWordEvents;
 use crate::core::regexword::mappers::regexword_to_entity_hidden_view;
 use crate::core::regexword::repositories::CustomRegexWordRepository;
 use crate::core::regexword::services::select_regexword_service::SelectRegexWordService;
+use crate::models::regexword::views::check_view::CheckView;
 use crate::models::regexword::views::{RegexWordViewEvent, RegexWordViewState};
 use framework_cqrs_lib::cqrs::core::context::Context;
 use framework_cqrs_lib::cqrs::core::repositories::events::RepositoryEvents;
@@ -16,12 +17,13 @@ use framework_cqrs_lib::cqrs::core::repositories::filter::{Expr, ExprGeneric, Fi
 use framework_cqrs_lib::cqrs::core::repositories::query::{Paged, Query as QueryCore};
 use framework_cqrs_lib::cqrs::infra::helpers::context::CanDecoreFromHttpRequest;
 use framework_cqrs_lib::cqrs::infra::mappers::event_api_view::from_entity_event_to_view;
-use framework_cqrs_lib::cqrs::infra::mappers::state_view::{from_states_to_entity_view, from_states_to_view, CanBeManyView};
+use framework_cqrs_lib::cqrs::infra::mappers::state_view::{
+    from_states_to_entity_view, from_states_to_view, CanBeManyView,
+};
 use framework_cqrs_lib::cqrs::models::errors::StandardHttpError;
 use framework_cqrs_lib::cqrs::models::jsonapi::CanBeView;
 use framework_cqrs_lib::cqrs::models::views::entities::EntityView;
 use framework_cqrs_lib::cqrs::models::views::DataWrapperView;
-use crate::models::regexword::views::check_view::CheckView;
 
 #[utoipa::path(
     tag = "regexword",
@@ -42,27 +44,30 @@ pub async fn dayword_regexword(
 ) -> impl Responder {
     let ctx: Context = Context::empty()
         .decore_with_http_header(&req)
-        .clone_with_filter(
-            HashMap::from([
-                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
-                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
-            ])
-        );
+        .clone_with_filter(HashMap::from([
+            (
+                "page[number]".to_string(),
+                query
+                    .number
+                    .map(|x| x.to_string())
+                    .unwrap_or("0".to_string()),
+            ),
+            (
+                "page[size]".to_string(),
+                query
+                    .size
+                    .map(|x| x.to_string())
+                    .unwrap_or("10".to_string()),
+            ),
+        ]));
 
     match select_word_service
         .get_current_or_select_one(&ctx)
         .await
-        .and_then(|entity| {
-            regexword_to_entity_hidden_view(&entity, &ctx)
-        }) {
-        Ok(view) => {
-            HttpResponse::Ok().json(
-                DataWrapperView {
-                    data: view
-                }
-            )
-        }
-        _ => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+        .and_then(|entity| regexword_to_entity_hidden_view(&entity, &ctx))
+    {
+        Ok(view) => HttpResponse::Ok().json(DataWrapperView { data: view }),
+        _ => HttpResponse::InternalServerError().json(&http_error.internal_server_error),
     }
 }
 
@@ -88,30 +93,45 @@ pub async fn check_regexword(
 
     let ctx: Context = Context::empty()
         .decore_with_http_header(&req)
-        .clone_with_filter(
-            HashMap::from([
-                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
-                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
-            ])
-        );
+        .clone_with_filter(HashMap::from([
+            (
+                "page[number]".to_string(),
+                query
+                    .number
+                    .map(|x| x.to_string())
+                    .unwrap_or("0".to_string()),
+            ),
+            (
+                "page[size]".to_string(),
+                query
+                    .size
+                    .map(|x| x.to_string())
+                    .unwrap_or("10".to_string()),
+            ),
+        ]));
 
     select_word_service
         .valid_current_word(&word, &ctx)
         .await
-        .map(|res| {
-            HttpResponse::Ok().json(
-                DataWrapperView {
-                    data: EntityView {
-                        r#type: "check".to_string(),
-                        id: format!("{res}"),
-                        links: None,
-                        attributes: CheckView {
-                            is_valid: res,
-                        }
+        .map(|res| HttpResponse::Ok().json({
+
+            let index_concat = res.1.iter()
+                .map(|d| format!("{d}"))
+                .collect::<Vec<_>>()
+                .join("-");
+
+            DataWrapperView {
+                data: EntityView {
+                    r#type: "check".to_string(),
+                    id: format!("{}-{}", res.0, index_concat),
+                    links: None,
+                    attributes: CheckView {
+                        is_valid: res.0,
+                        valid_position: res.1
                     }
                 }
-            )
-        })
+            }
+        }))
         .unwrap_or(HttpResponse::InternalServerError().json(&http_error.internal_server_error))
 }
 
@@ -134,24 +154,38 @@ pub async fn fetch_many_regexword(
 ) -> impl Responder {
     let ctx: Context = Context::empty()
         .decore_with_http_header(&req)
-        .clone_with_filter(
-            HashMap::from([
-                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
-                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
-            ])
-        );
+        .clone_with_filter(HashMap::from([
+            (
+                "page[number]".to_string(),
+                query
+                    .number
+                    .map(|x| x.to_string())
+                    .unwrap_or("0".to_string()),
+            ),
+            (
+                "page[size]".to_string(),
+                query
+                    .size
+                    .map(|x| x.to_string())
+                    .unwrap_or("10".to_string()),
+            ),
+        ]));
 
-    match store.fetch_many(
-        from_regexword_query_to_query_repo(query)
-    ).await {
+    match store
+        .fetch_many(from_regexword_query_to_query_repo(query))
+        .await
+    {
         Ok(items) => {
-            let paged_view: Paged<EntityView<RegexWordViewState>> = items.map(|entity| {
-                from_states_to_entity_view(entity, "regexword".to_string(), &ctx)
-            });
+            let paged_view: Paged<EntityView<RegexWordViewState>> = items
+                .map(|entity| from_states_to_entity_view(entity, "regexword".to_string(), &ctx));
 
-            HttpResponse::Ok().json(paged_view.to_many_view(&ctx, "regexword".to_string(), HashMap::from([("regexword".to_string(), "regexword".to_string())])))
+            HttpResponse::Ok().json(paged_view.to_many_view(
+                &ctx,
+                "regexword".to_string(),
+                HashMap::from([("regexword".to_string(), "regexword".to_string())]),
+            ))
         }
-        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error),
     }
 }
 
@@ -184,7 +218,7 @@ pub async fn fetch_one_regexword(
             HttpResponse::Ok().json(view)
         }
         Ok(_) => HttpResponse::NotFound().json(&http_error.not_found),
-        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error),
     }
 }
 
@@ -215,43 +249,50 @@ pub async fn fetch_regexword_events(
 
     let ctx: Context = Context::empty()
         .decore_with_http_header(&req)
-        .clone_with_filter(
-            HashMap::from([
-                ("page[number]".to_string(), query.number.map(|x| x.to_string()).unwrap_or("0".to_string())),
-                ("page[size]".to_string(), query.size.map(|x| x.to_string()).unwrap_or("10".to_string())),
-            ])
-        );
+        .clone_with_filter(HashMap::from([
+            (
+                "page[number]".to_string(),
+                query
+                    .number
+                    .map(|x| x.to_string())
+                    .unwrap_or("0".to_string()),
+            ),
+            (
+                "page[size]".to_string(),
+                query
+                    .size
+                    .map(|x| x.to_string())
+                    .unwrap_or("10".to_string()),
+            ),
+        ]));
 
     let query_core_with_filter = QueryCore {
-        filter: Filter::Expr(
-            Expr::ExprStr(
-                ExprGeneric::<String> {
-                    field: "entity_id".to_string(),
-                    operation: Operation::EqualsTo,
-                    head: id.to_string(),
-                }
-            )
-        ),
+        filter: Filter::Expr(Expr::ExprStr(ExprGeneric::<String> {
+            field: "entity_id".to_string(),
+            operation: Operation::EqualsTo,
+            head: id.to_string(),
+        })),
         ..query_core
     };
 
     match journal.fetch_many(query_core_with_filter).await {
         Ok(items) => {
-            let paged_view = items.map(|entity_event| {
-                EntityView {
-                    r#type: "urn:api:regexword:regexword".to_string(),
-                    id: entity_event.entity_id,
-                    attributes: entity_event.data.to_view(),
-                    links: None,
-                }
+            let paged_view = items.map(|entity_event| EntityView {
+                r#type: "urn:api:regexword:regexword".to_string(),
+                id: entity_event.entity_id,
+                attributes: entity_event.data.to_view(),
+                links: None,
             });
 
-            HttpResponse::Ok().json(paged_view.to_many_view(&ctx, "regexword".to_string(), HashMap::new()))
+            HttpResponse::Ok().json(paged_view.to_many_view(
+                &ctx,
+                "regexword".to_string(),
+                HashMap::new(),
+            ))
         }
-        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error),
     }
 }
-
 
 #[utoipa::path(
     tag = "regexword",
@@ -273,26 +314,21 @@ pub async fn fetch_one_regexword_event(
 ) -> impl Responder {
     let (_, event_id) = path.into_inner();
 
-    let ctx = Context::empty()
-        .decore_with_http_header(&req);
+    let ctx = Context::empty().decore_with_http_header(&req);
 
     match journal.fetch_one(&event_id).await {
-        Ok(maybe_event) => {
-            match maybe_event {
-                Some(event) => {
-                    let view = from_entity_event_to_view::<RegexWordEvents, RegexWordViewEvent>(
-                        event,
-                        "regexword".to_string(),
-                        "urn:api:regexword:regexword".to_string(),
-                        &ctx,
-                    );
-                    HttpResponse::Ok().json(view)
-                }
-                None => {
-                    HttpResponse::InternalServerError().json(&http_error.not_found)
-                }
+        Ok(maybe_event) => match maybe_event {
+            Some(event) => {
+                let view = from_entity_event_to_view::<RegexWordEvents, RegexWordViewEvent>(
+                    event,
+                    "regexword".to_string(),
+                    "urn:api:regexword:regexword".to_string(),
+                    &ctx,
+                );
+                HttpResponse::Ok().json(view)
             }
-        }
-        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error)
+            None => HttpResponse::InternalServerError().json(&http_error.not_found),
+        },
+        Err(_) => HttpResponse::InternalServerError().json(&http_error.internal_server_error),
     }
 }

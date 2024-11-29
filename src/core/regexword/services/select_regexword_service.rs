@@ -12,14 +12,32 @@ use crate::core::regexword::repositories::CustomRegexWordRepository;
 use crate::models::regexword::commands::{RegexWordCommands, SelectOneRegexWordCommand};
 
 
+// TODO : implémentez ca dans la struct ()
+
 #[async_trait]
 pub trait SelectRegexWordService: Send + Sync {
     /// WARN: this service mustn't be injected in command handler (cyclic dependency)
 
-    async fn valid_current_word(&self, word: &str, ctx: &Context) -> ResultErr<bool> {
+    async fn valid_current_word(&self, word: &str, ctx: &Context) -> ResultErr<(bool, Vec<u32>)> {
         self.get_current_or_select_one(ctx)
             .await
-            .map(|entity| entity.data.get_word().as_str().to_lowercase() == word.to_lowercase())
+            .and_then(|entity| self.validate_current_word(word, &entity))
+    }
+
+    // TODO : bouger ca dans l'impl du trait (devrait etre privé)
+    fn validate_current_word(&self, word: &str, entity: &Entity<RegexWordStates, String>) -> ResultErr<(bool, Vec<u32>)> {
+        let correspondance_index = word.chars()
+            .enumerate()
+            .flat_map(|(index, current_letter)| {
+                let expected_letter = entity.data.get_word().chars().collect::<Vec<_>>().get(index).map(|c| c.clone());
+                expected_letter
+                    .and_then(|expected_letter| if format!("{expected_letter}").to_lowercase() == format!("{current_letter}").to_lowercase() { Some(vec![index]) } else { None })
+            })
+            .flatten()
+            .map(|x| x as u32)
+            .collect::<Vec<_>>();
+
+        Ok((correspondance_index.len() == word.len(), correspondance_index))
     }
 
     async fn get_current_or_select_one(&self, ctx: &Context) -> ResultErr<Entity<RegexWordStates, String>> {
